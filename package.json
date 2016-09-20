@@ -1,0 +1,40 @@
+{
+  "name": "hurt",
+  "version": "0.1.0",
+  "description": "HTTP routing using RFC 6570 URI templates",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jpommerening/hurt"
+  },
+  "bugs": {
+    "url": "https://github.com/jpommerening/hurt/issues"
+  },
+  "scripts": {
+    "prepublish": "babel -d lib src",
+    "test": "mocha --compilers js:babel-core/register",
+    "posttest": "eslint src test"
+  },
+  "dependencies": {
+    "uri-templates": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-core": "^6.14.0",
+    "babel-plugin-transform-object-rest-spread": "^6.8.0",
+    "babel-preset-es2015": "^6.14.0",
+    "chai": "^3.5.0",
+    "eslint": "^3.5.0",
+    "ghooks": "^1.3.2",
+    "mocha": "^3.0.2",
+    "staged-files": "^0.1.2"
+  },
+  "config": {
+    "ghooks": {
+      "pre-commit": "staged-files 'src/*.js' 'test/*.js' -- eslint",
+      "pre-push": "npm test",
+      "post-merge": "npm install",
+      "post-rewrite": "npm install"
+    }
+  }
+}
