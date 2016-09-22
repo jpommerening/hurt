@@ -12,7 +12,7 @@ export default function router(routes) {
 
 function regExpPrefix(regexp) {
   const source = regexp.source;
-  const index = regexp.search(/([^\]\.|\\[dDsSwWxu]|\(\[)/);
+  const index = source.search(/([^\]\.|\\[dDsSwWxu]|\(\[)/);
   return source.substr(0, index).replace(/\\([\\().*\[\]])/g, '$1');
 }
 
@@ -73,4 +73,25 @@ export class TemplateRoute extends UriRoute {
   }
 }
 
+export class MethodRoute extends Route {
+  constructor(method, callback) {
+    super(callback);
+    this.method = method.toUpperCase();
+  }
+  handle(req, res, next) {
+    if (this.method === req.method) {
+      return Route.prototype.handle.apply(this, arguments);
+    }
+    return next();
+  }
+}
 
+export class Router {
+  constructor(options) {
+    this.options = options;
+    this.routes = [];
+  }
+  mount(route) {
+    this.routes.push(route);
+  }
+}
