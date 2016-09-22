@@ -1,6 +1,6 @@
 # hurt
 
-> *H*TTP routing with *UR*I *t*emplates
+> **H**TTP routing with **UR**I **t**emplates
 
 After all of two minutes browsing [npmjs.org](https://www.npmjs.com/search?q=6570+router) I could not find what I was looking for, so I built it myself. How hard can it be, right?
 
