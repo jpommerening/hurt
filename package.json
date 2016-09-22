@@ -1,7 +1,7 @@
 {
   "name": "hurt",
   "version": "0.1.0",
-  "description": "HTTP routing using RFC 6570 URI templates",
+  "description": "HTTP and SPA routing using RFC 6570 URI templates",
   "license": "MIT",
   "repository": {
     "type": "git",
