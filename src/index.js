@@ -21,6 +21,48 @@ function uriPrefix(uri) {
   return uri.substr(0, index);
 }
 
+function route(test, ...stack) {
+  function handle(req, res, next) {
+    const stack = [].concat(handle.stack);
+    const tests = handle.tests;
+    let active = false;
+    let called = false;
+
+    if (tests.every(test => test(req, res))) {
+      return iter();
+    } else {
+      return next();
+    }
+
+    function iter() {
+      // flatten stack when called sync
+      if (active) {
+        called = true;
+        return;
+      }
+
+      active = true;
+
+      do {
+        let fn = stack.shift();
+        called = false;
+        if (fn) {
+          fn(req, res, iter);
+        } else {
+          next();
+        }
+      } while (called);
+
+      active = false;
+    }
+  }
+
+  handle.stack = stack;
+  handle.tests = [ test ];
+
+  return handle;
+}
+
 export class Route {
   constructor(callback) {
     this.callback = callback;
@@ -35,14 +77,7 @@ export class UriRoute extends Route {
     super(callback);
     this.prefix = uri;
     this.match = reqUrl => reqUrl === uri;
-  }
-  handle(req, res, next) {
-    const params = this.match(req.url);
-    if (params) {
-      req.params = params;
-      return Route.prototype.handle.apply(this, arguments);
-    }
-    return next();
+    this.handle = route(req => req.params = this.match(req.url), this.callback);
   }
 }
 
@@ -93,5 +128,8 @@ export class Router {
   }
   mount(route) {
     this.routes.push(route);
+  }
+  get(uri, callback) {
+    this.mount(new MethodRoute('GET', callback));
   }
 }
