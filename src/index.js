@@ -1,13 +1,43 @@
 'use strict';
 
 import template from 'uri-templates';
+import handler from './handler';
+import conditional from './conditional';
+import timeout from './timeout';
+import { jit } from './optimize';
 
-export default function router(routes) {
-  if (Array.isArray(routes)) {
-    routes.forEach(route => this.use(route));
-  } else if (routes) {
-    Object.keys(routes).forEach(path => this.use(path, routes[path]));
+export function router(options) {
+  const stack = [];
+  const fn = jit(stack, options);
+
+  Router.use = function (handler) {
+    stack.push(handler);
+    return Router;
+  };
+
+  Router.timeout = function (delay, handler) {
+    stack.unshift(timeout(delay, handler));
+    return Router;
+  };
+
+  return Router;
+
+  function Router(req, res) {
+    return fn(req, res, function() {
+      if (!res.finished) {
+        res.end();
+      }
+    });
   }
+}
+
+export default router;
+
+function everyfn(fns) {
+  if (fns.length === 0) {
+    return () => true;
+  }
+  return (...args) => fns.every(fn => fn(...args));
 }
 
 function regExpPrefix(regexp) {
@@ -22,46 +52,17 @@ function uriPrefix(uri) {
 }
 
 function route(test, ...stack) {
-  function handle(req, res, next) {
-    const stack = [].concat(handle.stack);
-    const tests = handle.tests;
-    let active = false;
-    let called = false;
+  const tests = Array.isArray(test) ? test : [test];
+  const handle = handler(stack);
+  const route = conditional(everyfn(tests), handle);
 
-    if (tests.every(test => test(req, res))) {
-      return iter();
-    } else {
-      return next();
-    }
+  route.stack = stack,
+  route.tests = tests;
+  route.handle = handle;
 
-    function iter() {
-      // flatten stack when called sync
-      if (active) {
-        called = true;
-        return;
-      }
-
-      active = true;
-
-      do {
-        let fn = stack.shift();
-        called = false;
-        if (fn) {
-          fn(req, res, iter);
-        } else {
-          next();
-        }
-      } while (called);
-
-      active = false;
-    }
-  }
-
-  handle.stack = stack;
-  handle.tests = [ test ];
-
-  return handle;
+  return route;
 }
+
 
 export class Route {
   constructor(callback) {
@@ -131,5 +132,17 @@ export class Router {
   }
   get(uri, callback) {
     this.mount(new MethodRoute('GET', callback));
+  }
+  put(uri, callback) {
+    this.mount(new MethodRoute('PUT', callback));
+  }
+  post(uri, callback) {
+    this.mount(new MethodRoute('POST', callback));
+  }
+  handle(req, res, next) {
+    if (!this.handler) {
+      this.handler = handler(this.routes.map(r => r.handle.bind(r)));
+    }
+    this.handler(req, res, next);
   }
 }

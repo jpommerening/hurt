@@ -2,7 +2,14 @@
   "name": "hurt",
   "version": "0.1.0",
   "description": "HTTP and SPA routing using RFC 6570 URI templates",
-  "keywords": [ "http", "router", "routing", "6570", "uri", "templates" ],
+  "keywords": [
+    "http",
+    "router",
+    "routing",
+    "6570",
+    "uri",
+    "templates"
+  ],
   "license": "MIT",
   "repository": {
     "type": "git",
