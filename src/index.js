@@ -3,33 +3,7 @@
 import template from 'uri-templates';
 import handler from './handler';
 import conditional from './conditional';
-import timeout from './timeout';
-import { jit } from './optimize';
-
-export function router(options) {
-  const stack = [];
-  const fn = jit(stack, options);
-
-  Router.use = function (handler) {
-    stack.push(handler);
-    return Router;
-  };
-
-  Router.timeout = function (delay, handler) {
-    stack.unshift(timeout(delay, handler));
-    return Router;
-  };
-
-  return Router;
-
-  function Router(req, res) {
-    return fn(req, res, function() {
-      if (!res.finished) {
-        res.end();
-      }
-    });
-  }
-}
+import router from './router';
 
 export default router;
 
