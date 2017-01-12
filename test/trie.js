@@ -51,10 +51,10 @@ describe('trie#add(trie, key, items)', () => {
     },
     {
       input: { key: [1, 2, 3] },
-      key: 'subtree',
+      key: 'subtrie',
       items: { x: [4, 5, 6] },
-      expect: { key: [1, 2, 3], subtree: { x: [4, 5, 6] } },
-      it: 'can add disjoint subtrees'
+      expect: { key: [1, 2, 3], subtrie: { x: [4, 5, 6] } },
+      it: 'can add disjoint subtries'
     }
   ];
 
@@ -75,7 +75,7 @@ describe('trie#add(trie, key, items)', () => {
 
 });
 
-describe('tree#flatten(trie)', () => {
+describe('trie#flatten(trie)', () => {
 
   it('returns a flat object with all keys of the nested trie', () => {
     const trie = {
@@ -99,7 +99,7 @@ describe('tree#flatten(trie)', () => {
 
 });
 
-describe('tree#match(trie, key)', () => {
+describe('trie#match(trie, key)', () => {
 
   it('returns a map possible suffixes the given key', () => {
     const trie = {
