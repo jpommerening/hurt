@@ -1,8 +1,6 @@
 import handler from './handler';
 import mixin from './mixin';
 
-function logme() { console.log( 'me', this ); arguments[ arguments.length-1 ](); }
-
 export default function router(options) {
   const pre = [];
   const stack = [];

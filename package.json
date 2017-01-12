@@ -19,11 +19,11 @@
     "url": "https://github.com/jpommerening/hurt/issues"
   },
   "scripts": {
-    "prepublish": "babel -d lib src",
-    "test": "mocha --compilers js:babel-core/register",
-    "posttest": "eslint src test"
+    "prepublish": "babel -d lib src && babel -o index.js src",
+    "test": "mocha --compilers js:babel-core/register"
   },
   "dependencies": {
+    "eventemitter3": "^2.0.2",
     "uri-templates": "^0.2.0"
   },
   "devDependencies": {
@@ -39,7 +39,6 @@
   },
   "config": {
     "ghooks": {
-      "pre-commit": "staged-files 'src/*.js' 'test/*.js' -- eslint",
       "pre-push": "npm test",
       "post-merge": "npm install",
       "post-rewrite": "npm install"

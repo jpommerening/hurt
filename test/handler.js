@@ -1,4 +1,4 @@
-/* elint-env node, mocha */
+/* eslint-env node, mocha */
 
 import { expect } from 'chai';
 
@@ -128,7 +128,7 @@ describe('handler(stack)', () => {
         last++;
         next();
       };
-      const err = next => {
+      const err = () => {
         last++;
         throw new Error('the message');
       };

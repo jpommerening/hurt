@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 
 import sync from './sync';
 
-export function mixin(options) {
+export function mixin() {
   const eventemitter = new EventEmitter();
 
   return {
@@ -25,4 +25,4 @@ export function mixin(options) {
       this.use(...args);
     }
   };
-};
+}

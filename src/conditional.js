@@ -3,7 +3,7 @@ export default function conditional(test, handle) {
     const next = args.pop();
 
     if (test(...args)) {
-      handle(...args, next);
+      handle.call(this, ...args, next);
     } else {
       next();
     }

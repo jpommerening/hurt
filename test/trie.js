@@ -1,4 +1,4 @@
-/* elint-env node, mocha */
+/* eslint-env node, mocha */
 
 import { expect } from 'chai';
 
@@ -60,7 +60,6 @@ describe('trie#add(trie, key, items)', () => {
 
   tests.forEach(test => {
     it(test.it, () => {
-      const input = JSON.parse(JSON.stringify(test.input));
       const trie = add(test.input, test.key, test.items);
       expect(trie).to.eql(test.expect);
     });
@@ -69,7 +68,7 @@ describe('trie#add(trie, key, items)', () => {
   it('does not modify the input trie', () => {
     tests.forEach(test => {
       const input = JSON.parse(JSON.stringify(test.input));
-      const trie = add(test.input, test.key, test.items);
+      add(test.input, test.key, test.items);
       expect(test.input).to.eql(input);
     });
   });
@@ -95,6 +94,28 @@ describe('tree#flatten(trie)', () => {
       two: [4, 5, 6],
       three: [7, 8, 9],
       ones: []
+    });
+  });
+
+});
+
+describe('tree#match(trie, key)', () => {
+
+  it('returns a map possible suffixes the given key', () => {
+    const trie = {
+      one: {
+        '': [1, 2, 3],
+        s: []
+      },
+      t: {
+        wo: [4, 5, 6],
+        hree: [7, 8, 9 ]
+      }
+    };
+
+    expect(match(trie, 'onesie')).to.eql({
+      sie: [1, 2, 3],
+      ie: []
     });
   });
 

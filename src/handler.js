@@ -9,12 +9,11 @@ export default function handler(stack) {
   return function (...args) {
     const self = this;
     const next = args.pop();
-    args.push(iter);
 
     let index = 0;
     let sync = true;
 
-    console.log('handler', self);
+    args.push(iter);
     iter();
 
     function iter(err) {
@@ -25,10 +24,10 @@ export default function handler(stack) {
       while (sync) {
         sync = false;
         if (err || index >= stack.length) {
-          next.call(self, err);
+          next(err);
         } else {
           try {
-            stack[index++].call(self, ...args);
+            stack[index++].apply(self, args);
           }
           catch (e) {
             sync = true;

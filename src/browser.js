@@ -1,5 +1,11 @@
 const noop = () => {};
 
+export function finish() {
+  return function (req, res, next = noop) {
+    next();
+  };
+}
+
 export function timeout(delay, handler = noop) {
   return function(...args) {
     const next = args.pop();
@@ -64,10 +70,12 @@ export function attach(window, handler, options = {}) {
     event.stopPropagation();
     event.preventDefault();
 
-    run({ url: url.href.substr(base.length), replace: true });
+    const url = parseUrl(location.href);
+
+    run({ url: url.href.substr(base.length), replace: true }, history.state || {});
   });
 
-  function run(options) {
+  function run(options, res = { cycle: cycle++ }) {
     const req = {
       url: options.url,
       baseUrl: base,
@@ -75,13 +83,9 @@ export function attach(window, handler, options = {}) {
       replace: options.replace || false
     };
 
-    const res = {
-      cycle: cycle++
-    };
-
     handler(req, res, function (err) {
       if (err) {
-        console.error(err);
+        throw err;
       }
       else {
         const method = req.replace ? history.replaceState : history.pushState;
@@ -103,16 +107,26 @@ export function attach(window, handler, options = {}) {
 }
 
 export function mixin(options) {
+  let finish_ = finish();
+  let timeout_ = timeout(options.timeout, finish_);
 
   return {
-    pre: [],
-    post: [],
+    pre: [ timeout_ ],
+    post: [ finish_ ],
     attach(window = options.window) {
       attach(window, this, options);
       return this;
     },
-    timeout(delay) {
-      timeout(delay);
+    timeout(delay, handler) {
+      const index = this.pre.indexOf( timeout_ );
+
+      timeout_ = timeout(delay || options.timeout, handler || finish_);
+
+      if( index < 0 ) {
+        this.pre.push( timeout_ );
+      } else {
+        this.pre[ index ] = timeout_;
+      }
       return this;
     }
   };

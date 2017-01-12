@@ -18,7 +18,6 @@ function bind(fn, thisArg) {
 }
 
 export default function mixin(target, mixin) {
-  console.log(mixin);
   Object.getOwnPropertyNames(mixin).forEach(name => {
     const descriptor = Object.getOwnPropertyDescriptor(mixin, name)
     const exists = hasOwnProperty.call(target, name);
