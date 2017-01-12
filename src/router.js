@@ -1,66 +1,40 @@
-'use strict';
-
 import handler from './handler';
+import mixin from './mixin';
 
-export default function router() {
+function logme() { console.log( 'me', this ); arguments[ arguments.length-1 ](); }
+
+export default function router(options) {
   const pre = [];
   const stack = [];
   const post = [];
-  const mixins = [];
 
-  const fn = handler([
+  const base = handler([
     handler(pre),
     handler(stack),
     handler(post)
   ]);
 
-  fn.mixin = function (mixin) {
-    mixins.push(mixin);
-  };
+  // wrap to bind `this` to the returned router
+  function fn() {
+    return base.apply(fn, arguments);
+  }
 
-  fn.use = function (handler) {
-    stack.push(handler);
-  };
+  mixin(fn, {
+    pre,
+    post,
+    use(...args) {
+      stack.push.apply(stack, args);
+      return this;
+    },
+    mixin(...mixins) {
+      mixins.forEach(m => mixin(this, m));
+      return this;
+    }
+  });
 
-  /*
-  fn.timeout = function (delay, handle) {
-    pre.push(timeout(delay, handle));
-  };
-  */
+  const mixins = router.mixins.map(mixin => mixin(options));
 
-  return fn;
+  return fn.mixin(...mixins);
 }
 
-/*
-fn.mixin({
-  pre: [
-    function (req, res, next) {
-      this.emit('request', req);
-      next();
-    }
-  ],
-  post: [
-    function (req, res, next) {
-      this.emit('finish', res);
-      next();
-    }
-  ],
-  emit() {},
-  on() {},
-  once() {}
-});
-
-fn.mixin({
-  pre: [],
-  post: [],
-  method(method, ...handler) {
-  },
-  get(path, ...handler) {
-  },
-  post(path, ...handler) {
-  },
-  timeout(delay, ...handler) {
-  }
-});
-
-*/
+router.mixins = [];

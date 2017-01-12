@@ -1,5 +1,3 @@
-'use strict';
-
 export default function conditional(test, handle) {
   return function (...args) {
     const next = args.pop();

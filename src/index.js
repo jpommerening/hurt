@@ -1,5 +1,3 @@
-'use strict';
-
 import template from 'uri-templates';
 import handler from './handler';
 import conditional from './conditional';
