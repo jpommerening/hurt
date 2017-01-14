@@ -54,8 +54,9 @@ describe('e2e browser', () => {
       }
     };
 
-
     if (process.env.TRAVIS) {
+      this.timeout(60000);
+
       config.host = 'ondemand.saucelabs.com';
       config.port = 80;
       config.path = '/wd/hub';
