@@ -47,7 +47,7 @@ describe('e2e browser', () => {
     server.listen(port, done);
   });
 
-  before(done => {
+  before(function (done) {
     const config = {
       desiredCapabilities: {
         browserName: 'firefox'
@@ -55,6 +55,7 @@ describe('e2e browser', () => {
     };
 
     if (process.env.TRAVIS) {
+      this.timeout(45000);
       config.host = 'ondemand.saucelabs.com';
       config.port = 80;
       config.path = '/wd/hub';
@@ -67,7 +68,7 @@ describe('e2e browser', () => {
     browser = webdriverio.remote(config);
     browser.init().url(`http://localhost:${port}`)
       .then(() => done(), done);
-  }).timeout(30000);
+  });
 
   after(done => {
     server.close(done);
