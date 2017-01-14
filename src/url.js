@@ -16,9 +16,9 @@ function templateParams(template) {
 
 function regExpPrefix(regexp) {
   const source = regexp.source;
-  const index = source.search(/([^\]\.|\\[dDsSwWxu]|\(\[)/);
-  const prefix = index < 0 ? source : source.substr(0, index);
-  return prefix.replace(/\\([\\().*\[\]])/g, '$1');
+  const match = /(^|[^\\])([[({.]|\\[dDsSwWxu])/.exec(source);
+  const prefix = match ? source.substr(0, match.index + match[1].length) : source;
+  return prefix.replace(/\\([/\\().*\[\]])/g, '$1');
 }
 
 function regExpParams(regexp) {

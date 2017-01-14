@@ -1,0 +1,17 @@
+[
+  {
+    "path": "/",
+    "method": "GET",
+    "response": { "data": "ROOT" }
+  },
+  {
+    "path": "/object/123abc",
+    "method": "GET",
+    "response": { "data": "OBJECT 123abc" }
+  },
+  {
+    "path": "/file/my-file",
+    "method": "GET",
+    "response": { "data": "FILE my-file" }
+  }
+]

@@ -32,12 +32,17 @@
     "babel-plugin-transform-object-rest-spread": "^6.20.2",
     "babel-preset-es2015": "^6.18.0",
     "chai": "^3.5.0",
+    "connect": "^3.5.0",
     "eslint": "^3.12.2",
     "ghooks": "^1.3.2",
+    "lodash.template": "^4.4.0",
     "mocha": "^3.2.0",
-    "staged-files": "^0.1.2"
+    "phantomjs-prebuilt": "^2.1.14",
+    "staged-files": "^0.1.2",
+    "webdriverio": "^4.6.1"
   },
   "config": {
+    "port": 8080,
     "ghooks": {
       "pre-push": "npm test",
       "post-merge": "npm install",

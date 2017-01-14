@@ -1,0 +1,19 @@
+[
+  {
+    "url": "/",
+    "response": "ROOT"
+  },
+  {
+    "url": "/object/([0-9a-f]{6,})$",
+    "regexp": true,
+    "response": "OBJECT ${params[1]}"
+  },
+  {
+    "url": "/file/{path+}",
+    "response": "FILE ${params['path+']}"
+  },
+  {
+    "url": "/search{?q,page}",
+    "response": "RESULTS ${params.q}, PAGE ${params.page || 1}"
+  }
+]
