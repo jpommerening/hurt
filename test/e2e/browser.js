@@ -57,6 +57,7 @@ describe('e2e browser', () => {
 
     if (process.env.TRAVIS) {
       config.host = 'ondemand.saucelabs.com';
+      config.port = 80;
       config.path = '/wd/hub';
       config.user = process.env.SAUCE_USERNAME;
       config.key = process.env.SAUCE_ACCESS_KEY;

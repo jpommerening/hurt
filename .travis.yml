@@ -7,5 +7,5 @@ addons:
   sauce_connect: true
 
 script:
-  npm test
-  npm test test/e2e
+  - npm test
+  - npm test test/e2e
