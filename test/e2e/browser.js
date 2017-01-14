@@ -55,8 +55,6 @@ describe('e2e browser', () => {
     };
 
     if (process.env.TRAVIS) {
-      this.timeout(60000);
-
       config.host = 'ondemand.saucelabs.com';
       config.port = 80;
       config.path = '/wd/hub';
@@ -69,7 +67,7 @@ describe('e2e browser', () => {
     browser = webdriverio.remote(config);
     browser.init().url(`http://localhost:${port}`)
       .then(() => done(), done);
-  });
+  }).timeout(30000);
 
   after(done => {
     server.close(done);
