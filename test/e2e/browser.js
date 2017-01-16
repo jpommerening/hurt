@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 
+import template from 'lodash.template';
 import phantom from 'phantomjs-prebuilt';
 import * as webdriverio from 'webdriverio';
 
@@ -36,13 +37,15 @@ describe('e2e browser', () => {
     }
 
     browser = webdriverio.remote(config);
-    browser.init().url(`http://localhost:${port}`)
-      .then(() => done(), done);
 
     if (!process.env.TRAVIS) {
-      const process = phantom.exec('--webdriver=4444');
-      browser.once('end', () => process.kill());
+      const p = phantom.exec('--webdriver=4444');
+      browser.once('end', () => p.kill());
     }
+
+    browser.init().url(`http://localhost:${port}`)
+      .execute('setup', routes)
+      .then(() => done(), done);
   });
 
   after(done => {
@@ -61,6 +64,7 @@ describe('e2e browser', () => {
     expect,
     port,
     request(options, callback) {
+      browser.execute('navigate', options);
       try {
         Promise.all( [
           browser.getText('#response-status'),

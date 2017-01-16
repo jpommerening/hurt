@@ -1,5 +1,6 @@
 import { add, match } from './trie';
 import handler from './handler';
+import conditional from './conditional';
 
 import uriTemplate from 'uri-templates';
 
@@ -33,7 +34,11 @@ function routeHandler(params, stack) {
     const match = params(req.url);
 
     if (match) {
-      req.params = Object.assign(req.params || {}, match);
+      req.params = {
+        ...req.params,
+        ...match
+      };
+
       fn.call(this, req, ...args, function (err) {
         if (!err) {
           req.handled = true;
@@ -68,7 +73,7 @@ export function mixin() {
 
   return {
     post: [
-      notfoundHandler(notfound)
+      conditional(req => !req.handled, handler(notfound))
     ],
     use: function (url, ...stack) {
       let prefix;

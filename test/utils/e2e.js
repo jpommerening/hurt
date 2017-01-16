@@ -47,7 +47,14 @@ export function request(options, callback) {
   req.end();
 }
 
-export function setup({ res = respond }, router, routes) {
+export function mount(router, method, ...args) {
+  router[ method ].apply(router, args);
+}
+
+export function setup({
+  respond: res = respond,
+  mount: mnt = mount
+}, router, routes) {
   routes.forEach(options => {
     const method = (options.method || 'use').toLowerCase();
     const args = [];
@@ -60,7 +67,7 @@ export function setup({ res = respond }, router, routes) {
       args.push(res(options.response));
     }
 
-    router[ method ].apply(router, args);
+    mnt(router, method, ...args);
   });
 }
 

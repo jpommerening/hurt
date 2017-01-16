@@ -3,10 +3,49 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <script src="/hurt.js"></script>
 </head>
 <body>
   <pre id="response-status">200</pre>
   <pre id="response-headers">{}</pre>
   <pre id="response-data">ROOT</pre>
+  <script>
+    var $status = document.getElementById('response-status');
+    var $headers = document.getElementById('response-headers');
+    var $data = document.getElementById('response-data');
+
+    var router = hurt({ base: document.location.origin });
+    router.attach(window);
+
+    function respond(response) {
+      return function (req, res, next) {
+        $data.textContent = response;
+        next();
+      }
+    }
+
+    function setup(routes) {
+      routes.forEach(function (options) {
+        var method = (options.method || 'use').toLowerCase();
+        var args = [];
+
+        if (options.url) {
+          args.push(options.regexp ? new RegExp(options.url) : options.url);
+        }
+
+        if (options.response) {
+          args.push(respond(options.response))
+        }
+
+        router[ method ].apply(router, args);
+      });
+    }
+
+    function navigate(options) {
+      var a = document.createElement('a');
+      a.href = options.path;
+      a.click();
+    }
+  </script>
 </body>
 </html>

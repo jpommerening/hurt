@@ -7,25 +7,22 @@ import routes from './routes.json';
 import requests from './requests.json';
 import { setup, test } from '../utils/e2e';
 
-import hurt from '../../src/router';
-import { mixin as node } from '../../src/node';
-import { mixin as url } from '../../src/url';
-
+import hurt from '../../src/index';
 
 const port = process.env.PORT || process.env.npm_package_config_port;
-
-const app = connect();
-const router = hurt().mixin(node({}), url({}));
-
-setup({}, router, routes);
-
-app.use(router);
 
 describe('e2e connect', () => {
 
   let server;
 
   before(done => {
+    const app = connect();
+    const router = hurt();
+
+    setup({}, router, routes);
+
+    app.use(router);
+
     server = http.createServer(app);
     server.listen(port, done);
   });

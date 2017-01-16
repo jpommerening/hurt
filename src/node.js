@@ -26,7 +26,7 @@ export function request() {
   };
 }
 
-export function mixin(options) {
+export function mixin(options = {}) {
   let finish_ = finish();
   let timeout_ = timeout(options.timeout, finish_);
 

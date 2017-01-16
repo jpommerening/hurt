@@ -18,9 +18,14 @@
   "bugs": {
     "url": "https://github.com/jpommerening/hurt/issues"
   },
+  "main": "lib/index.js",
+  "browser": "lib/browser.js",
   "scripts": {
-    "prepublish": "babel -d lib src && babel -o index.js src",
-    "test": "mocha --compilers js:babel-core/register"
+    "prepublish": "babel -d lib src && webpack -p",
+    "test": "mocha --compilers js:babel-core/register",
+    "prepush": "npm test",
+    "postmerge": "npm install",
+    "postrewrite": "npm install"
   },
   "dependencies": {
     "eventemitter3": "^2.0.2",
@@ -34,19 +39,15 @@
     "chai": "^3.5.0",
     "connect": "^3.5.0",
     "eslint": "^3.12.2",
-    "ghooks": "^1.3.2",
+    "husky": "^0.12.0",
     "lodash.template": "^4.4.0",
     "mocha": "^3.2.0",
     "phantomjs-prebuilt": "^2.1.14",
     "staged-files": "^0.1.2",
-    "webdriverio": "^4.6.1"
+    "webdriverio": "^4.6.1",
+    "webpack": "^1.14.0"
   },
   "config": {
-    "port": 8080,
-    "ghooks": {
-      "pre-push": "npm test",
-      "post-merge": "npm install",
-      "post-rewrite": "npm install"
-    }
+    "port": 8080
   }
 }

@@ -1,21 +1,47 @@
-import fs from 'fs';
-import path from 'path';
-import http from 'http';
+var fs = require('fs');
+var path = require('path');
+var http = require('http');
+var webpack = require('webpack');
+var MemoryFS = require('memory-fs');
+var config = require('../../../webpack.config.js');
+var pkg = require('../../../package.json');
 
-const PORT = process.env.PORT || process.env.npm_package_config_port;
+var PORT = process.env.PORT || process.env.npm_package_config_port || pkg.config.port;
 
-const CONTENT_TYPES = {
+var CONTENT_TYPES = {
   '.html': 'text/html',
   '.js': 'application/javascript'
 };
 
-const SERVED_FILES = {
-  '/index.html': file(path.join(__dirname, 'index.html'))
+var SERVED_FILES = {
+  '/index.html': file(path.join(__dirname, 'index.html')),
+  '/hurt.js': bundle(config, 'hurt.js')
 };
 
+function bundle(config, filename) {
+  var ext = path.extname(filename);
+  var type = CONTENT_TYPES[ext] || 'text/plain';
+  var fs = new MemoryFS();
+  var compiler = webpack(config);
+  compiler.outputFileSystem = fs;
+
+  return function (req, res) {
+    compiler.run(function (err, stats) {
+      if (err) {
+        return servererror(req, res)(err);
+      }
+
+      var content = fs.readFileSync(path.join(config.output.path, filename));
+      res.writeHead(200, {'Content-Type': type});
+      res.write(content);
+      res.end();
+    });
+  };
+}
+
 function file(file) {
-  const ext = path.extname(file);
-  const type = CONTENT_TYPES[ext] || 'text/plain';
+  var ext = path.extname(file);
+  var type = CONTENT_TYPES[ext] || 'text/plain';
 
   return function (req, res) {
     fs.access(file, function(err) {
@@ -23,31 +49,34 @@ function file(file) {
         return notfound(req, res);
       }
 
-      const stream = fs.createReadStream(file);
+      var stream = fs.createReadStream(file);
       res.writeHead(200, {'Content-Type': type});
 
       stream.pipe(res);
-      stream.on('end', () => {
-        req.destroy();
-      });
-      stream.on('error', err => {
-        res.writeHead(503, {});
-        res.write(err.message);
-        res.end();
-        req.destroy();
-      });
+      stream.on('error', servererror(req, res));
     });
+  };
+}
+
+function servererror(req, res, no) {
+  return function (err) {
+    res.writeHead(no || 503, {});
+    res.write(err.message);
+    res.end();
   };
 }
 
 function notfound(req, res) {
   res.writeHead(404, {});
   res.end();
-  req.destroy();
 }
 
 function handler(req, res) {
-  const url = req.url === '/' ? '/index.html' : req.url;
+  var url = req.url === '/' ? '/index.html' : req.url;
+
+  res.once('finish', function () {
+    req.destroy();
+  });
 
   if (SERVED_FILES[url]) {
     return SERVED_FILES[url](req, res);
@@ -57,10 +86,9 @@ function handler(req, res) {
   }
 }
 
-const server = http.createServer(handler);
+var server = module.exports = http.createServer(handler);
 
 if (!module.parent) {
+  console.log('Listening on port ' + PORT);
   server.listen(PORT);
 }
-
-export default server;
