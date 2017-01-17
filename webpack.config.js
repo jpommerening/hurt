@@ -1,12 +1,15 @@
-var pkg = require('./package.json');
+'use strict';
+
 var path = require('path');
+var pkg = require('./package.json');
 
 module.exports = {
-  entry: path.resolve(pkg.browser),
+  context: __dirname,
+  entry: path.join(__dirname, pkg.browser),
   output: {
     library: pkg.name,
     libraryTarget: 'umd',
-    path: 'build',
-    filename: pkg.name + '.js'
+    filename: pkg.name + '.js',
+    path: path.join(__dirname, 'dist')
   }
 };

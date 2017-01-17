@@ -4,22 +4,48 @@
   <meta charset="UTF-8">
   <title></title>
   <script src="/hurt.js"></script>
+  <script src="/lodash.template.js"></script>
 </head>
 <body>
   <pre id="response-status">200</pre>
   <pre id="response-headers">{}</pre>
   <pre id="response-data">ROOT</pre>
+  <div id="navigation"></div>
   <script>
     var $status = document.getElementById('response-status');
     var $headers = document.getElementById('response-headers');
     var $data = document.getElementById('response-data');
+    var $navigation = document.getElementById('navigation');
 
+    var callbacks = [];
     var router = hurt({ base: document.location.origin });
+
     router.attach(window);
+    router.mixin({
+      post: [
+        function (req, res, next) {
+          var response = {
+            status: parseInt($status.textContent, 10),
+            headers: JSON.parse($headers.textContent),
+            data: $data.textContent
+          };
+
+          while (callbacks.length) {
+            callbacks.pop()(response);
+          }
+          next();
+        }
+      ]
+    });
 
     function respond(response) {
+      var t = window['lodash.template'](response, {
+        evaluate: false,
+        interpolate: /\$\{([^{}]+?)}/g
+      });
+
       return function (req, res, next) {
-        $data.textContent = response;
+        $data.textContent = t(req);
         next();
       }
     }
@@ -41,9 +67,20 @@
       });
     }
 
-    function navigate(options) {
+
+    function request(options, callback) {
       var a = document.createElement('a');
-      a.href = options.path;
+      a.href = options.url || options.path;
+      a.appendChild(document.createTextNode(a.pathname));
+
+      while ($navigation.firstChild) {
+        $navigation.removeChild($navigation.firstChild);
+      }
+
+      $navigation.appendChild(a);
+
+      callbacks.push(callback);
+
       a.click();
     }
   </script>

@@ -15,8 +15,21 @@ var CONTENT_TYPES = {
 
 var SERVED_FILES = {
   '/index.html': file(path.join(__dirname, 'index.html')),
+  '/lodash.template.js': library('lodash.template'),
   '/hurt.js': bundle(config, 'hurt.js')
 };
+
+function library(name) {
+  return bundle({
+    entry: require.resolve(name),
+    output: {
+      library: name,
+      libraryTarget: 'umd',
+      path: config.output.path,
+      filename: name + '.js'
+    }
+  }, name + '.js');
+}
 
 function bundle(config, filename) {
   var ext = path.extname(filename);
@@ -60,7 +73,7 @@ function file(file) {
 
 function servererror(req, res, no) {
   return function (err) {
-    res.writeHead(no || 503, {});
+    res.writeHead(no || 500, {});
     res.write(err.message);
     res.end();
   };
