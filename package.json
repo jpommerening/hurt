@@ -41,6 +41,7 @@
     "eslint": "^3.12.2",
     "husky": "^0.12.0",
     "lodash.template": "^4.4.0",
+    "memory-fs": "^0.4.1",
     "mocha": "^3.2.0",
     "phantomjs-prebuilt": "^2.1.14",
     "staged-files": "^0.1.2",
