@@ -5,7 +5,14 @@ node_js:
   - "6"
 addons:
   sauce_connect: true
+env:
+  - TEST_SUITE=test
+  - TEST_SUITE=test/e2e/connect
+  - TEST_SUITE=test/e2e/express
+  - TEST_SUITE=test/e2e/restify
+  - TEST_SUITE=test/e2e/browser BROWSER=firefox
+  - TEST_SUITE=test/e2e/browser BROWSER=chrome
+  - TEST_SUITE=test/e2e/browser BROWSER=ie10
 
 script:
-  - npm test
-  - npm test test/e2e
+  - npm test $TEST_SUITE
