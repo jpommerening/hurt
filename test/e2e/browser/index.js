@@ -19,6 +19,8 @@ describe('e2e browser', () => {
   before(function (done) {
     browser = webdriver();
 
+    this.timeout(45000);
+
     browser
       .init()
       .url(`http://localhost:${port}`)
