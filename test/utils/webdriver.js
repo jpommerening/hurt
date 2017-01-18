@@ -18,6 +18,9 @@ export function defaults() {
   if (process.env.BROWSER) {
     config.desiredCapabilities['browserName'] = process.env.BROWSER;
   }
+  if (process.env.PLATFORM) {
+    config.desiredCapabilities['platform'] = process.env.PLATFORM;
+  }
 
   return config;
 }

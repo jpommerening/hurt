@@ -23,11 +23,11 @@ matrix:
   - node_js: "node"
     addons:
       sauce_connect: true
-    env: TEST_SUITE=test/e2e/browser BROWSER="internet explorer"
+    env: TEST_SUITE=test/e2e/browser BROWSER="internet explorer" PLATFORM="Windows 10"
   - node_js: "node"
     addons:
       sauce_connect: true
-    env: TEST_SUITE=test/e2e/browser BROWSER="safari"
+    env: TEST_SUITE=test/e2e/browser BROWSER="safari" PLATFORM="macOS 10.12"
 
 script:
   - npm test $TEST_SUITE
