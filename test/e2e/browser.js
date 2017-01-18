@@ -25,9 +25,10 @@ describe('e2e browser', () => {
 
     if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
       this.timeout(45000);
-      config.hostname = 'ondemand.saucelabs.com';
+      config.host = 'ondemand.saucelabs.com';
       config.port = 80;
-      config.auth = `${process.env.SAUCE_USERNAME}:${process.env.SAUCE_ACCESS_KEY}`;
+      config.user = process.env.SAUCE_USERNAME;
+      config.key = process.env.SAUCE_ACCESS_KEY;
     }
     if (process.env.TRAVIS) {
       config.desiredCapabilities['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
