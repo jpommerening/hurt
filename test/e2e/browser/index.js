@@ -52,7 +52,7 @@ describe('e2e browser', () => {
         .executeAsync(function run(options, callback) {
           request(options, callback);
         }, options)
-        .then(() => callback(), err => callback(err));
+        .then(response => callback(null, response), err => callback(err));
     }
   }, requests);
 
