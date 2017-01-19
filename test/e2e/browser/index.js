@@ -24,10 +24,10 @@ describe('e2e browser', () => {
     browser
       .init()
       .url(`http://localhost:${port}`)
-      .execute('setup(arguments[0])', routes)
-      .then(() => done(), err => {
-        done(err);
-      });
+      .executeAsync(function run(routes, callback) {
+        setup(routes);
+        callback();
+      }, routes, done);
   });
 
   after(done => {
@@ -48,7 +48,9 @@ describe('e2e browser', () => {
     port,
     request(options, callback) {
       browser
-        .executeAsync('request(arguments[0], arguments[1])', options, callback);
+        .executeAsync(function run(options, callback) {
+          request(options, callback);
+        }, options, callback);
     }
   }, requests);
 
