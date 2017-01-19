@@ -27,7 +27,8 @@ describe('e2e browser', () => {
       .executeAsync(function run(routes, callback) {
         setup(routes);
         callback();
-      }, routes, done);
+      }, routes)
+      .then(() => done(), err => done(err));
   });
 
   after(done => {
@@ -50,7 +51,8 @@ describe('e2e browser', () => {
       browser
         .executeAsync(function run(options, callback) {
           request(options, callback);
-        }, options, callback);
+        }, options)
+        .then(() => callback(), err => callback(err));
     }
   }, requests);
 
