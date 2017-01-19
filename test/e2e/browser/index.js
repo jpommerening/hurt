@@ -48,8 +48,7 @@ describe('e2e browser', () => {
     port,
     request(options, callback) {
       browser
-        .executeAsync('request(arguments[0], arguments[1])', options)
-        .then(response => callback(null, response.value), callback);
+        .executeAsync('request(arguments[0], arguments[1])', options, callback);
     }
   }, requests);
 
