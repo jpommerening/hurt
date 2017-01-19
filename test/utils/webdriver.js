@@ -12,6 +12,8 @@ export function defaults() {
     config.key = process.env.SAUCE_ACCESS_KEY;
   }
   if (process.env.TRAVIS) {
+    config.host = 'localhost';
+    config.port = 4445;
     config.desiredCapabilities['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
     config.desiredCapabilities['build'] = process.env.TRAVIS_BUILD_NUMBER;
   }
