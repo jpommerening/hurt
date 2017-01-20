@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import routes from '../routes.json';
 import requests from '../requests.json';
 import { test } from '../../utils/e2e';
-import webdriver from '../../utils/webdriver';
+import { capabilities, remote } from '../../utils/webdriver';
 import server from './server';
 
 const port = process.env.PORT || process.env.npm_package_config_port;
@@ -17,17 +17,14 @@ describe('e2e browser', () => {
   });
 
   before(function (done) {
-    browser = webdriver();
+    browser = remote().init(capabilities());
 
     this.timeout(45000);
 
     browser
-      .init()
-      .url(`http://localhost:${port}`)
-      .executeAsync(function run(routes, callback) {
-        setup(routes);
-        callback();
-      }, routes)
+      .init(capabilities())
+      .get(`http://localhost:${port}`)
+      .execute('setup(arguments[0])', [routes])
       .then(() => done(), err => done(err));
   });
 
@@ -36,8 +33,7 @@ describe('e2e browser', () => {
   });
 
   after(done => {
-    browser
-      .end()
+    browser.quit()
       .then(() => done(), done);
   });
 
@@ -49,14 +45,7 @@ describe('e2e browser', () => {
     port,
     request(options, callback) {
       browser
-        .executeAsync(function run(options, callback) {
-          request(options, function (err, response) {
-            if (err) {
-              throw err;
-            }
-            callback(response);
-          });
-        }, options)
+        .executeAsync('request(arguments[0], arguments[1])', [options])
         .then(response => callback(null, response), err => callback(err));
     }
   }, requests);

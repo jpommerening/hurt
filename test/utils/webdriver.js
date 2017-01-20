@@ -1,37 +1,45 @@
-import * as webdriverio from 'webdriverio';
+import wd from 'wd';
 
 export function defaults() {
   const config = {
-    desiredCapabilities: {}
   };
 
   if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
     config.host = 'ondemand.saucelabs.com';
     config.port = 80;
     config.user = process.env.SAUCE_USERNAME;
-    config.key = process.env.SAUCE_ACCESS_KEY;
+    config.pwd = process.env.SAUCE_ACCESS_KEY;
   }
   if (process.env.TRAVIS) {
     config.host = 'localhost';
     config.port = 4445;
-    config.desiredCapabilities['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
-    config.desiredCapabilities['build'] = process.env.TRAVIS_BUILD_NUMBER;
-  }
-  if (process.env.BROWSER) {
-    config.desiredCapabilities['browserName'] = process.env.BROWSER;
-  }
-  if (process.env.PLATFORM) {
-    config.desiredCapabilities['platform'] = process.env.PLATFORM;
   }
 
   return config;
 }
 
-export default function webdriver(options = {}) {
-  const config = {
-    ...defaults(),
-    ...options
-  };
+export function capabilities() {
+  const caps = {};
 
-  return webdriverio.remote(config);
-};
+  if (process.env.TRAVIS) {
+    caps['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
+    caps['build'] = process.env.TRAVIS_BUILD_NUMBER;
+  }
+  if (process.env.BROWSER) {
+    caps['browserName'] = process.env.BROWSER;
+  }
+  if (process.env.PLATFORM) {
+    caps['platform'] = process.env.PLATFORM;
+  }
+
+  return caps;
+}
+
+export function remote(config = {}) {
+  return wd.promiseChainRemote({
+    ...defaults(),
+    ...config
+  });
+}
+
+export default remote;
