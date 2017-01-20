@@ -50,7 +50,12 @@ describe('e2e browser', () => {
     request(options, callback) {
       browser
         .executeAsync(function run(options, callback) {
-          request(options, callback);
+          request(options, function (err, response) {
+            if (err) {
+              throw err;
+            }
+            callback(response);
+          });
         }, options)
         .then(response => callback(null, response), err => callback(err));
     }
