@@ -21,7 +21,7 @@ export function defaults() {
 export function capabilities() {
   const caps = {};
 
-  if (proces.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
+  if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
     caps['seleniumVersion'] = '3.0.1';
   }
   if (process.env.TRAVIS) {
