@@ -13,5 +13,25 @@
     "path": "/file/my-file",
     "method": "GET",
     "response": { "data": "FILE my-file" }
+  },
+  {
+    "path": "/file/my-directory/my-file",
+    "method": "GET",
+    "response": { "data": "FILE my-directory/my-file" }
+  },
+  {
+    "path": "/search?q=my+search",
+    "method": "GET",
+    "response": { "data": "RESULTS my+search, PAGE 1" }
+  },
+  {
+    "path": "/search?q=my%20search",
+    "method": "GET",
+    "response": { "data": "RESULTS my search, PAGE 1" }
+  },
+  {
+    "path": "/search?q=my+search&page=2",
+    "method": "GET",
+    "response": { "data": "RESULTS my+search, PAGE 2" }
   }
 ]

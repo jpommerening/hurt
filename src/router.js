@@ -1,7 +1,7 @@
 import handler from './handler';
 import mixin from './mixin';
 
-export default function router(options) {
+export function baseRouter(options) {
   const pre = [];
   const stack = [];
   const post = [];
@@ -30,8 +30,12 @@ export default function router(options) {
     }
   });
 
-  const mixins = router.mixins.map(mixin => mixin(options));
+  return fn;
+}
 
+export default function router(options) {
+  const fn = baseRouter(options);
+  const mixins = router.mixins.map(mixin => mixin(options));
   return fn.mixin(...mixins);
 }
 
