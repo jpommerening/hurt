@@ -22,7 +22,6 @@ describe('e2e browser', () => {
     this.timeout(45000);
 
     browser
-      .init(capabilities())
       .get(`http://localhost:${port}`)
       .execute('setup(arguments[0])', [routes])
       .then(() => done(), err => done(err));
