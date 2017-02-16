@@ -1,0 +1,8 @@
+engines:
+  duplication:
+    enabled: true
+  eslint:
+    enabled: true
+    channel: "eslint-3"
+  markdownlint:
+    enabled: true
