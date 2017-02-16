@@ -5,6 +5,7 @@ import requests from '../requests.json';
 import { test } from '../../utils/e2e';
 import { capabilities, remote } from '../../utils/webdriver';
 import server from './server';
+import coverage from './coverage';
 
 const port = process.env.PORT || process.env.npm_package_config_port;
 
@@ -25,6 +26,13 @@ describe('e2e browser', () => {
       .get(`http://localhost:${port}`)
       .execute('setup(arguments[0])', [routes])
       .then(() => done(), err => done(err));
+  });
+
+  after(done => {
+    browser
+      .execute('return window.__coverage__')
+      .then(coverage)
+      .then(() => done(), done);
   });
 
   after(done => {

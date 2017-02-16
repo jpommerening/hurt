@@ -16,8 +16,25 @@ var CONTENT_TYPES = {
 var SERVED_FILES = {
   '/index.html': file(path.join(__dirname, 'index.html')),
   '/lodash.template.js': library('lodash.template'),
-  '/hurt.js': bundle(config, 'hurt.js')
+  '/hurt.js': bundle(instrument(config), 'hurt.js')
 };
+
+function instrument(config) {
+  return {
+    context: config.context,
+    entry: config.entry,
+    output: config.output,
+    module: {
+      loaders: [
+        {
+          test: /\.js$/,
+          include: path.resolve(__dirname, '../../../lib'),
+          loader: 'istanbul-instrumenter-loader'
+        }
+      ].concat(config.module && config.module.loaders || [])
+    }
+  };
+}
 
 function library(name) {
   return bundle({

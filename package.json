@@ -22,7 +22,8 @@
   "browser": "lib/browser.js",
   "scripts": {
     "prepublish": "babel -d lib src && webpack -p",
-    "test": "mocha --compilers js:babel-core/register",
+    "test": "nyc -n src mocha --compilers js:babel-core/register",
+    "posttest": "eslint src",
     "prepush": "npm test",
     "postmerge": "npm install",
     "postrewrite": "npm install"
@@ -41,9 +42,12 @@
     "eslint": "^3.12.2",
     "express": "^4.14.0",
     "husky": "^0.12.0",
+    "istanbul-api": "^1.1.1",
+    "istanbul-instrumenter-loader": "^2.0.0",
     "lodash.template": "^4.4.0",
     "memory-fs": "^0.4.1",
     "mocha": "^3.2.0",
+    "nyc": "^10.1.2",
     "phantomjs-prebuilt": "^2.1.14",
     "restify": "^4.3.0",
     "staged-files": "^0.1.2",
