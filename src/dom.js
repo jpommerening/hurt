@@ -26,73 +26,77 @@ export function attach(window, handler, options = {}) {
   } = window;
 
   let submit = null;
-  let cycle = 0;
 
   const base = (options.base ? parseUrl(options.base).href : document.baseURI)
     .replace(/\/$/, '');
 
-  document.addEventListener('submit', function (event) {
-    const { target } = event;
-    if (target.localName === 'form' && target.action) {
-      const url = parseUrl(/*submit.formAction ||*/ target.action);
+  function eventListener (event) {
+    const { target, type, altKey, metaKey } = event;
 
-      if (url.href.substr(0, base.length) === base) {
-        event.stopPropagation();
-        event.preventDefault();
-
-        run({
-          url: url.href.substr(base.length),
-          method: submit.formMethod || target.method
-        });
-      }
+    if (altKey || metaKey) {
+      return;
     }
-    submit = null;
-  });
 
-  document.addEventListener('click', function (event) {
-    const { target } = event;
-    if (target.localName === 'button' && target.type === 'submit') {
+    if (type === 'click' && target.localName === 'button' && target.type === 'submit') {
       submit = target;
     }
-    if (target.localName === 'a' && target.href) {
-      const url = parseUrl(target.href);
-
-      if (url.href.substr(0, base.length) === base) {
-        event.stopPropagation();
-        event.preventDefault();
-
-        run({ url: url.href.substr(base.length) });
-      }
+    if (type === 'click' && target.localName === 'a' && target.href) {
+      const { href: url } = parseUrl(target.href);
+      run({ url, event });
     }
-  });
+    if (type === 'submit' && target.localName === 'form' && target.action) {
+      const { href: url } = parseUrl(/*submit.formAction ||*/ target.action);
+      const method = submit.formMethod || target.method;
+      submit = null;
+      run({ url, method, event });
+    }
+  }
+
+  document.addEventListener('submit', eventListener);
+  document.addEventListener('click', eventListener);
 
   window.addEventListener('popstate', function (event) {
-    event.stopPropagation();
-    event.preventDefault();
+    const { href: url } = parseUrl(location.href);
 
-    const url = parseUrl(location.href);
-
-    run({ url: url.href.substr(base.length), replace: true }, history.state || {});
+    run({ url, replace: true, state: history.state, event });
   });
 
-  function run(options, res = { cycle: cycle++ }) {
+  function run({ url, event, ...options }, callback = () => {}) {
     const req = {
-      url: options.url,
-      baseUrl: base,
       method: (options.method || 'GET').toUpperCase(),
-      replace: options.replace || false
+      replace: options.replace || false,
+      state: options.state || {}
     };
 
-    handler(req, res, function (err) {
-      if (err) {
-        throw err;
-      }
-      else {
-        const method = req.replace ? history.replaceState : history.pushState;
+    if (url.substr(0, base.length) !== base) {
+      return false;
+    }
 
-        method.call(history, res, res.title, base + req.url);
+    req.url = url.substr(base.length);
+    req.baseUrl = base;
+
+    if (event) {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    handler(req, {}, function (err) {
+      if (err) {
+        callback(err);
+        return;
+      }
+
+      try {
+        const method = req.replace ? history.replaceState : history.pushState;
+        const state = req.state;
+        method.call(history, state, state.title, base + req.url);
+        callback(null, state);
+      }
+      catch (err) {
+        callback(err);
       }
     });
+    return true;
   }
 
   function parseUrl(href) {

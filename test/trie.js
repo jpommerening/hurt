@@ -3,6 +3,7 @@
 import { expect } from 'chai';
 
 import { add, flatten, match } from '../src/trie';
+import create from '../src/trie';
 
 describe('trie#add(trie, key, items)', () => {
 
@@ -34,6 +35,27 @@ describe('trie#add(trie, key, items)', () => {
       items: [4, 5, 6],
       expect: { key: { a: [1, 2, 3], b: [4, 5, 6] } },
       it: 'splits keys with common prefixes'
+    },
+    {
+      input: { key: { '': [1, 2], a: [3, 4] } },
+      key: 'key',
+      items: [5, 6],
+      expect: { key: { '': [1, 2, 5, 6], a: [3, 4] } },
+      it: 'adds items for keys that already exist and are prefixes of other keys'
+    },
+    {
+      input: { key: { '': [1, 2], a: [3, 4] } },
+      key: 'keya',
+      items: [5, 6],
+      expect: { key: { '': [1, 2], a: [3, 4, 5, 6] } },
+      it: 'adds items for keys that already exist and are prefixed by other keys'
+    },
+    {
+      input: { key: { '': [1, 2], a: [3, 4] } },
+      key: 'keyb',
+      items: [5, 6],
+      expect: { key: { '': [1, 2], a: [3, 4], b: [5, 6] } },
+      it: 'adds items for keys that are prefixed by existing keys which are prefixes of other keys'
     },
     {
       input: { key: [1, 2, 3] },
@@ -81,42 +103,71 @@ describe('trie#flatten(trie)', () => {
     const trie = {
       one: {
         '': [1, 2, 3],
-        s: []
+        s: [4]
       },
       t: {
-        wo: [4, 5, 6],
-        hree: [7, 8, 9 ]
+        wo: [5, 6, 7],
+        hree: [8, 9]
       }
     };
 
     expect(flatten(trie)).to.eql({
       one: [1, 2, 3],
-      two: [4, 5, 6],
-      three: [7, 8, 9],
-      ones: []
+      ones: [4],
+      two: [5, 6, 7],
+      three: [8, 9]
     });
   });
 
 });
 
-describe('trie#match(trie, key)', () => {
+describe('trie#match(trie, key[, output])', () => {
 
   it('returns a map possible suffixes the given key', () => {
     const trie = {
       one: {
         '': [1, 2, 3],
-        s: []
+        s: [4]
       },
       t: {
-        wo: [4, 5, 6],
-        hree: [7, 8, 9 ]
+        wo: [5, 6, 7],
+        hree: [8, 9]
       }
     };
 
     expect(match(trie, 'onesie')).to.eql({
       sie: [1, 2, 3],
-      ie: []
+      ie: [4]
     });
   });
 
+  it('appends items into the output if it is a list', () => {
+    const trie = {
+      one: {
+        '': [1, 2, 3],
+        s: [4]
+      },
+      t: {
+        wo: [5, 6, 7],
+        hree: [8, 9]
+      }
+    };
+
+    expect(match(trie, 'onesie', [])).to.eql([1, 2, 3, 4]);
+  });
+
+});
+
+describe('trie([root])', () => {
+  it('creates a wrapper built of the above methods', () => {
+    const trie = create();
+    expect(trie.flatten).to.be.a('function');
+    expect(trie.match).to.be.a('function');
+    expect(trie.add).to.be.a('function');
+
+    trie.add('one', 1, 2, 3);
+    trie.add('ones', 4);
+    expect(trie.flatten()).to.eql({ one: [1, 2, 3], ones: [4] });
+    expect(trie.match('onesie', [])).to.eql([1, 2, 3, 4]);
+  });
 });

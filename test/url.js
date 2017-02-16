@@ -81,6 +81,18 @@ describe('url#mixin()', () => {
     });
 
     describe('when called with a RegExp', () => {
+
+      it('returns `this`', () => {
+        expect(host.use('/path', () => {})).to.equal(host);
+      });
+
+      it('calls the host object\'s use() method with a custom handler', () => {
+        expect(host.use(/\/path/, () => {}));
+        expect(call).to.have.a.property('args');
+        expect(call.args).to.have.length(1);
+        expect(call.args[0]).to.be.a('function');
+      });
+
     });
 
   });

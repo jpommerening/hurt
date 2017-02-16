@@ -1,6 +1,5 @@
 import { add, match } from './trie';
 import handler from './handler';
-import conditional from './conditional';
 
 import uriTemplate from 'uri-templates';
 
@@ -52,28 +51,21 @@ function routeHandler(params, stack) {
   };
 }
 
-function notfoundHandler(stack) {
-  const fn = handler(stack);
-
-  return function (req, ...args) {
-    const next = args.pop();
-
-    if (!req.handled) {
-      fn.call(this, req, ...args, next);
-    }
-    else {
-      next();
-    }
-  };
-}
-
 export function mixin() {
   const tries = [{}];
   const notfound = [];
+  const handle = handler(notfound);
 
   return {
     post: [
-      conditional(req => !req.handled, handler(notfound))
+      function (req, ...args) {
+        if (!req.handled) {
+          handle.call(this, req, ...args);
+        } else {
+          const next = args[ args.length - 1 ];
+          next();
+        }
+      }
     ],
     use: function (url, ...stack) {
       let prefix;

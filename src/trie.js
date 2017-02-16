@@ -8,8 +8,8 @@ export default function trie(root = {}) {
     flatten() {
       return flatten(root);
     },
-    match(key) {
-      return match(root, key);
+    match(key, output) {
+      return match(root, key, output);
     },
     add(key, ...items) {
       return root = add(root, key, items);

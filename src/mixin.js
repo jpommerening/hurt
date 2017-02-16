@@ -27,10 +27,6 @@ function bind(fn, thisArg) {
     const returnValue = fn.apply(thisArg, arguments);
     return (returnValue === thisArg) ? this : returnValue;
   }
-
-  if (Object.getOwnPropertyDescriptor(bound, 'name').configurable) {
-    Object.defineProperty(bound, 'name', { value: `proxied ${fn.name}`, configurable: true });
-  }
   return bound;
 }
 

@@ -1,17 +1,10 @@
-import { baseRouter as router } from './router';
+import router from './router';
 import { mixin as events } from './events';
 import { mixin as url } from './url';
 
-export default function restify(options) {
-  const base = router(options);
-
-  const mixins = restify.mixins.map(mixin => mixin(options));
-
-  base.mixin(...mixins);
-
-  return create(base, options);
+export default function restify({ mixins = restify.mixins, ...options } = {}) {
+  return create(router({ mixins, ...options }), options);
 }
-
 restify.mixins = [ events, url ];
 
 export function mixin(options) {

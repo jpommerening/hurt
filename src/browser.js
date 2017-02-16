@@ -1,3 +1,4 @@
+/* global module */
 import router from './router';
 import { mixin as dom } from './dom';
 import { mixin as events } from './events';
