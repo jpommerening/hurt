@@ -9,3 +9,8 @@ engines:
     channel: "eslint-3"
   markdownlint:
     enabled: true
+
+ratings:
+  paths:
+  - "*.md"
+  - "src/**.js"
