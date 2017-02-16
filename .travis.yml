@@ -44,7 +44,6 @@ script:
 
 after_success:
   - if test -n "$CODECLIMATE" ; then
-      export ;
       npm install -g codeclimate-test-reporter nyc ;
       nyc report --reporter=text-lcov | codeclimate-test-reporter ;
     fi
