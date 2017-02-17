@@ -21,7 +21,7 @@ matrix:
   - node_js: "node"
     addons:
       code_climate: true
-    env: TEST_SUITE="test test/e2e" CODECLIMATE="true"
+    env: TEST_SUITE=test CODECLIMATE="true"
   - node_js: "node"
     addons:
       sauce_connect: true
