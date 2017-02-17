@@ -1,4 +1,5 @@
 import wd from 'wd';
+import phantomjs from 'phantomjs-prebuilt';
 
 export function defaults() {
   const config = {
@@ -42,11 +43,38 @@ export function capabilities() {
   return caps;
 }
 
+function start(remote, caps) {
+  if (!caps['browserName'] && !caps['tunnel-identifier']) {
+    return phantomjs.run(`--webdriver=${remote.configUrl.port || 4444}`).then(program => {
+      remote.on('command', (type, command) => {
+        if (type === 'RESPONSE' && /quit\(.*\)/.test(command)) {
+          program.kill();
+        }
+      });
+
+      return remote;
+    });
+  }
+
+  return remote;
+}
+
 export function remote(config = {}) {
-  return wd.promiseChainRemote({
+  const remote = wd.promiseChainRemote({
     ...defaults(),
     ...config
   });
+  const init = remote.init;
+
+  remote.init = caps => {
+    return remote
+      .resolve(start(remote, caps))
+      .then(() => {
+        return init.call(remote, caps);
+      });
+  };
+
+  return remote;
 }
 
 export default remote;
