@@ -1,3 +1,5 @@
+/* eslint-env mocha */
+
 import { expect } from 'chai';
 
 import routes from '../routes.json';

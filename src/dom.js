@@ -2,17 +2,23 @@ const noop = () => {};
 
 export function finish() {
   return function (req, res, next = noop) {
+    if (res.timeout) {
+      clearTimeout(res.timeout);
+      res.timeout = null;
+    }
+    if (!res.finished) {
+      res.finished = true;
+    }
     next();
   };
 }
 
 export function timeout(delay, handler = noop) {
-  return function(...args) {
-    const next = args.pop();
+  return function(req, res, next) {
     if (delay) {
-      setTimeout(() => {
-        handler(...args, noop);
-      });
+      res.timeout = setTimeout(() => {
+        handler(req, res, noop);
+      }, delay);
     }
     next();
   };
@@ -25,43 +31,42 @@ export function attach(window, handler, options = {}) {
     document
   } = window;
 
-  let submit = null;
-
-  const base = (options.base ? parseUrl(options.base).href : document.baseURI)
+  const base = (options.base ? canonicalizeUrl(options.base) : document.baseURI)
     .replace(/\/$/, '');
 
-  function eventListener (event) {
-    const { target, type, altKey, metaKey } = event;
+  let submit = null;
+
+  document.addEventListener('click', event => {
+    const { target, altKey, metaKey } = event;
 
     if (altKey || metaKey) {
       return;
     }
 
-    if (type === 'click' && target.localName === 'button' && target.type === 'submit') {
+    if (target.localName === 'button' && target.type === 'submit') {
       submit = target;
     }
-    if (type === 'click' && target.localName === 'a' && target.href) {
-      const { href: url } = parseUrl(target.href);
-      run({ url, event });
+    if (target.localName === 'a' && target.href) {
+      run({ url: target.href, event });
     }
-    if (type === 'submit' && target.localName === 'form' && target.action) {
-      const { href: url } = parseUrl(/*submit.formAction ||*/ target.action);
+  });
+
+  document.addEventListener('submit', event => {
+    const { target } = event;
+
+    if (target.localName === 'form' && target.action) {
+      const url = canonicalizeUrl(/*submit.formAction ||*/ target.action);
       const method = submit.formMethod || target.method;
       submit = null;
       run({ url, method, event });
     }
-  }
-
-  document.addEventListener('submit', eventListener);
-  document.addEventListener('click', eventListener);
-
-  window.addEventListener('popstate', function (event) {
-    const { href: url } = parseUrl(location.href);
-
-    run({ url, replace: true, state: history.state, event });
   });
 
-  function run({ url, event, ...options }, callback = () => {}) {
+  window.addEventListener('popstate', function (event) {
+    run({ url: location.href, replace: true, state: history.state, event });
+  });
+
+  function run({ url, event, ...options }) {
     const req = {
       method: (options.method || 'GET').toUpperCase(),
       replace: options.replace || false,
@@ -82,31 +87,19 @@ export function attach(window, handler, options = {}) {
 
     handler(req, {}, function (err) {
       if (err) {
-        callback(err);
         return;
       }
 
-      try {
-        const method = req.replace ? history.replaceState : history.pushState;
-        const state = req.state;
-        method.call(history, state, state.title, base + req.url);
-        callback(null, state);
-      }
-      catch (err) {
-        callback(err);
-      }
+      const method = req.replace ? history.replaceState : history.pushState;
+      const state = req.state;
+      method.call(history, state, state.title, base + req.url);
     });
-    return true;
   }
 
-  function parseUrl(href) {
+  function canonicalizeUrl(href) {
     const a = document.createElement('a');
     a.href = href;
-    return {
-      href: a.href,
-      pathname: a.pathname,
-      search: a.search
-    };
+    return a.href;
   }
 }
 

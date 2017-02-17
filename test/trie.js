@@ -1,4 +1,4 @@
-/* eslint-env node, mocha */
+/* eslint-env mocha */
 
 import { expect } from 'chai';
 
@@ -14,6 +14,13 @@ describe('trie#add(trie, key, items)', () => {
       items: [1, 2, 3],
       expect: { '': [1, 2, 3] },
       it: 'adds empty keys to empty objects'
+    },
+    {
+      input: { a: [1, 2] },
+      key: '',
+      items: [3, 4],
+      expect: { a: [1, 2], '': [3, 4] },
+      it: 'adds empty keys to non-empty objects'
     },
     {
       input: {},
@@ -56,6 +63,13 @@ describe('trie#add(trie, key, items)', () => {
       items: [5, 6],
       expect: { key: { '': [1, 2], a: [3, 4], b: [5, 6] } },
       it: 'adds items for keys that are prefixed by existing keys which are prefixes of other keys'
+    },
+    {
+      input: { key: [] },
+      key: 'keya',
+      items: [1, 2, 3],
+      expect: { key: { a: [1, 2, 3] } },
+      it: 'drops keys without items that are prefixes of new keys'
     },
     {
       input: { key: [1, 2, 3] },
@@ -135,6 +149,13 @@ describe('trie#match(trie, key[, output])', () => {
       }
     };
 
+    expect(match(trie, 'on')).to.eql({
+    });
+
+    expect(match(trie, 'one')).to.eql({
+      '': [1, 2, 3]
+    });
+
     expect(match(trie, 'onesie')).to.eql({
       sie: [1, 2, 3],
       ie: [4]
@@ -153,6 +174,10 @@ describe('trie#match(trie, key[, output])', () => {
       }
     };
 
+    expect(match(trie, 'on', [])).to.eql([]);
+
+    expect(match(trie, 'one', [])).to.eql([1, 2, 3]);
+
     expect(match(trie, 'onesie', [])).to.eql([1, 2, 3, 4]);
   });
 
@@ -169,5 +194,14 @@ describe('trie([root])', () => {
     trie.add('ones', 4);
     expect(trie.flatten()).to.eql({ one: [1, 2, 3], ones: [4] });
     expect(trie.match('onesie', [])).to.eql([1, 2, 3, 4]);
+  });
+
+  it('can take an existing trie as immutable base', () => {
+    const base = { on: [1, 2] };
+    const trie = create(base);
+    expect(trie.flatten()).to.eql(base);
+    trie.add('one', 3, 4);
+    expect(trie.flatten()).to.eql({ on: [1, 2], one: [3, 4] });
+    expect(base).to.eql({ on: [1, 2] });
   });
 });

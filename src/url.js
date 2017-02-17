@@ -11,18 +11,24 @@ function templatePrefix(template) {
 
 function templateParams(template) {
   const t = uriTemplate(template);
-  return url => t.fromUri(url);
+  return url => {
+    const match = t.fromUri(url);
+    return match;
+  };
 }
 
 function regExpPrefix(regexp) {
-  const source = regexp.source;
+  const source = regexp.source.replace(/(^\^|\$$)/g, '');
   const match = /(^|[^\\])([[({.]|\\[dDsSwWxu])/.exec(source);
   const prefix = match ? source.substr(0, match.index + match[1].length) : source;
   return prefix.replace(/\\([/\\().*\[\]])/g, '$1');
 }
 
 function regExpParams(regexp) {
-  return url => regexp.exec(url);
+  return url => {
+    const match = regexp.exec(url);
+    return match && (match[0] === url) && match;
+  };
 }
 
 function routeHandler(params, stack) {

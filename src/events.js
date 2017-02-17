@@ -22,7 +22,7 @@ export function mixin() {
     ],
     use(...args) {
       this.emit('handler', ...args);
-      this.use(...args);
+      return this.use(...args);
     }
   };
 }
