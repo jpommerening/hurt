@@ -14,3 +14,4 @@ ratings:
   paths:
   - "*.md"
   - "src/**.js"
+  - "test/**.js"

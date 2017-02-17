@@ -26,7 +26,7 @@ describe('url#mixin()', () => {
       call = {};
       host = {
         use: function (...args) {
-          call = { this, args };
+          call = { this: this, args };
           return this;
         }
       }

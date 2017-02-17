@@ -64,7 +64,7 @@ describe('mixin(target, mixin)', () => {
       let call = {};
       const source = {
         a(...args) {
-          call = { this, args };
+          call = { this: this, args };
           return 4;
         }
       };
@@ -84,7 +84,7 @@ describe('mixin(target, mixin)', () => {
       let call = {};
       const source = {
         a(...args) {
-          call = { this, args };
+          call = { this: this, args };
           return this.a;
         }
       };
@@ -94,8 +94,7 @@ describe('mixin(target, mixin)', () => {
       mixin(target, source);
       expect(target.a).to.be.a('function');
 
-      const fn = target.a;
-      const res = fn(1, 2, 3);
+      const res = target.a(1, 2, 3);
       expect(res).to.eql(4);
       expect(call).to.have.a.property('args');
       expect(call.args).to.eql([1, 2, 3]);
@@ -103,7 +102,7 @@ describe('mixin(target, mixin)', () => {
 
     it('unwraps the this instance if it is returned from a proxied function', () => {
       const source = {
-        a(...args) {
+        a() {
           return this;
         }
       };
@@ -113,7 +112,6 @@ describe('mixin(target, mixin)', () => {
       mixin(target, source);
       expect(target.a).to.be.a('function');
 
-      const fn = target.a;
       const res = target.a(1, 2, 3);
       expect(res).to.eql(target);
     });
@@ -127,7 +125,7 @@ describe('mixin(target, mixin)', () => {
       };
       const target = {
         a(...args) {
-          call = { this, args };
+          call = { this: this, args };
           return 4;
         }
       }

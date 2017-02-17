@@ -56,7 +56,7 @@ function bundle(config, filename) {
   compiler.outputFileSystem = fs;
 
   return function (req, res) {
-    compiler.run(function (err, stats) {
+    compiler.run(function (err/*, stats*/) {
       if (err) {
         return servererror(req, res)(err);
       }
@@ -119,6 +119,6 @@ function handler(req, res) {
 var server = module.exports = http.createServer(handler);
 
 if (!module.parent) {
-  console.log('Listening on port ' + PORT);
+  process.stdout.write('Listening on port ' + PORT + '\n');
   server.listen(PORT);
 }

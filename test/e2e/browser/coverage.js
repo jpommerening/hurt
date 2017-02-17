@@ -27,4 +27,4 @@ export default function createReport(coverage) {
 
   fs.writeFileSync(`${dir}/${id}.json`, JSON.stringify(remappedCoverageMap));
 
-};
+}

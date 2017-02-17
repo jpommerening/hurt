@@ -23,7 +23,7 @@
   "scripts": {
     "prepublish": "babel -d lib src && webpack -p",
     "test": "nyc -n src mocha --compilers js:babel-core/register",
-    "posttest": "eslint src",
+    "posttest": "eslint src test",
     "prepush": "npm test",
     "postmerge": "npm install",
     "postrewrite": "npm install"
