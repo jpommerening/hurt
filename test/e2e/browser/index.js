@@ -30,7 +30,7 @@ describe('e2e browser', () => {
       .then(() => {
         connected = true;
       })
-      .execute('setup(arguments[0])', [routes])
+      .execute('setup(arguments[0]);', [routes])
       .then(() => done(), err => done(err));
   });
 
@@ -39,7 +39,7 @@ describe('e2e browser', () => {
       this.timeout(15000);
 
       browser
-        .execute('return window.__coverage__')
+        .execute('return window.__coverage__;')
         .then(coverage, () => {})
         .quit()
         .then(() => done(), done);
@@ -61,7 +61,7 @@ describe('e2e browser', () => {
     port,
     request(options, callback) {
       browser
-        .executeAsync('request(arguments[0], arguments[1])', [options])
+        .executeAsync('request(arguments[0], arguments[1]);', [options])
         .then(response => callback(null, response), err => callback(err));
     }
   }, requests);
