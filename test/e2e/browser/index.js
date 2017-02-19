@@ -14,6 +14,7 @@ const port = process.env.PORT || process.env.npm_package_config_port;
 describe('e2e browser', () => {
 
   let browser;
+  let connected = false;
 
   before(done => {
     server.listen(port, done);
@@ -26,24 +27,30 @@ describe('e2e browser', () => {
 
     browser
       .get(`http://localhost:${port}`)
+      .then(() => {
+        connected = true;
+      })
       .execute('setup(arguments[0])', [routes])
       .then(() => done(), err => done(err));
   });
 
-  after(done => {
-    browser
-      .execute('return window.__coverage__')
-      .then(coverage)
-      .then(() => done(), done);
+  after(function (done) {
+    if (connected) {
+      this.timeout(15000);
+
+      browser
+        .execute('return window.__coverage__')
+        .then(coverage, () => {})
+        .quit()
+        .then(() => done(), done);
+    }
+    else {
+      done();
+    }
   });
 
   after(done => {
     server.close(done);
-  });
-
-  after(done => {
-    browser.quit()
-      .then(() => done(), done);
   });
 
   test({
