@@ -4,6 +4,7 @@ node_js:
   - 4
   - 5
   - 6
+cache: yarn
 env:
   - TEST_SUITE="test"
   - TEST_SUITE="test/e2e/connect"
