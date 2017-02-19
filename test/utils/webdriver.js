@@ -23,14 +23,6 @@ export function defaults() {
 export function capabilities() {
   const caps = {};
 
-  if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
-    caps['seleniumVersion'] = '3.0.1';
-
-    if (process.env.TRAVIS) {
-      caps['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
-      caps['build'] = process.env.TRAVIS_BUILD_NUMBER;
-    }
-  }
   if (process.env.BROWSER) {
     caps['browserName'] = process.env.BROWSER;
 
@@ -41,12 +33,20 @@ export function capabilities() {
   if (process.env.PLATFORM) {
     caps['platform'] = process.env.PLATFORM;
   }
+  if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
+    caps['seleniumVersion'] = '3.0.1';
+
+    if (process.env.TRAVIS && caps['browserName']) {
+      caps['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
+      caps['build'] = process.env.TRAVIS_BUILD_NUMBER;
+    }
+  }
 
   return caps;
 }
 
 function start(remote, caps) {
-  if (!caps['browserName'] && !caps['tunnel-identifier']) {
+  if (!(caps['browserName'] || caps['tunnel-identifier'])) {
     return phantomjs.run(`--webdriver=${remote.configUrl.port || 4444}`).then(program => {
       remote.on('command', (type, command) => {
         if (type === 'RESPONSE' && /quit\(.*\)/.test(command)) {
