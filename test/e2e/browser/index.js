@@ -36,7 +36,7 @@ describe('e2e browser', () => {
 
   after(function (done) {
     if (connected) {
-      this.timeout(15000);
+      this.timeout(45000);
 
       browser
         .execute('return window.__coverage__;')
