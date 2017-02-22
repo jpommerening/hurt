@@ -11,16 +11,18 @@ export default function createReport(coverage) {
   const sourceMapStore = istanbul.libSourceMaps.createSourceMapStore();
 
   Object.keys(coverage).forEach(filename => {
-    const fileCoverage = coverage[filename];
+    const cov = coverage[filename];
 
-    fileCoverage.inputSourceMap.sources = fileCoverage.inputSourceMap.sources.map(source => {
+    cov.inputSourceMap.sources = cov.inputSourceMap.sources.map(source => {
       if (source.indexOf('!') !== -1) {
         return source.split('!').pop();
       }
       return source;
     });
 
-    coverageMap.addFileCoverage(fileCoverage);
+    if (cov.lines && cov.statements && cov.functions && cov.branches) {
+      coverageMap.addFileCoverage(cov);
+    }
   });
 
   const remappedCoverageMap = sourceMapStore.transformCoverage(coverageMap).map;
