@@ -1,4 +1,4 @@
-const noop = () => {};
+import { replace, noop } from './util';
 
 export function finish() {
   return function (req, res, next = noop) {
@@ -13,6 +13,9 @@ export function timeout(delay, handler = finish()) {
   return function (req, res, next) {
     if (delay) {
       res.setTimeout(delay, () => {
+        if (typeof this.emit === 'function') {
+          this.emit('timeout', req, res);
+        }
         handler(req, res, noop);
       });
     }
@@ -34,15 +37,11 @@ export function mixin(options = {}) {
     pre: [ timeout_ ],
     post: [ finish_ ],
     timeout(delay, handler) {
-      const index = this.pre.indexOf( timeout_ );
-
-      timeout_ = timeout(delay || options.timeout, handler || finish_);
-
-      if( index < 0 ) {
-        this.pre.push( timeout_ );
-      } else {
-        this.pre[ index ] = timeout_;
-      }
+      timeout_ = replace(
+        this.pre,
+        timeout(delay || options.timeout, handler || finish_),
+        timeout_
+      );
       return this;
     }
   };
