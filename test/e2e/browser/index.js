@@ -15,6 +15,7 @@ describe('e2e browser', () => {
 
   let browser;
   let connected = false;
+  let failed = false;
 
   before(done => {
     server.listen(port, done);
@@ -35,13 +36,14 @@ describe('e2e browser', () => {
   });
 
   afterEach(function (done) {
-    const state = (this.currentTest.state === 'passed');
+    const passed = (this.currentTest.state === 'passed') && !failed;
+    failed = !passed;
     if (!browser) {
       done();
     }
     else if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
       browser
-        .sauceJobJobStatus(state)
+        .sauceJobStatus(passed)
         .then(() => done(), err => done(err));
     }
     else {
