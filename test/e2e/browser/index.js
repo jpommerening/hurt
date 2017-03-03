@@ -34,6 +34,22 @@ describe('e2e browser', () => {
       .then(() => done(), err => done(err));
   });
 
+  afterEach(function (done) {
+    const state = (this.currentTest.state === 'passed');
+    if (!browser) {
+      done();
+    }
+    else if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
+      browser
+        .sauceJobJobStatus(state)
+        .then(() => done(), err => done(err));
+    }
+    else {
+      browser
+        .then(() => done(), err => done(err));
+    }
+  });
+
   after(function (done) {
     if (connected) {
       this.timeout(45000);
