@@ -41,7 +41,7 @@ describe('e2e browser', () => {
     if (!browser) {
       done();
     }
-    else if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
+    else if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY && process.env.BROWSER) {
       browser
         .sauceJobStatus(passed)
         .then(() => done(), err => done(err));

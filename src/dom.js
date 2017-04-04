@@ -1,4 +1,26 @@
-import { replace, noop } from './util';
+import { replace, noop } from './_util';
+
+export function mixin(options = {}) {
+  let finish_ = finish();
+  let timeout_ = timeout(options.timeout, finish_);
+
+  return {
+    pre: [ timeout_ ],
+    post: [ finish_ ],
+    attach(window = options.window) {
+      attach(window, this, options);
+      return this;
+    },
+    timeout(delay, handler) {
+      timeout_ = replace(
+        this.pre,
+        timeout(delay || options.timeout, handler || finish_),
+        timeout_
+      );
+      return this;
+    }
+  };
+}
 
 export function finish() {
   return function (req, res, next = noop) {
@@ -104,26 +126,4 @@ export function attach(window, handler, options = {}) {
     a.href = href;
     return a.href;
   }
-}
-
-export function mixin(options = {}) {
-  let finish_ = finish();
-  let timeout_ = timeout(options.timeout, finish_);
-
-  return {
-    pre: [ timeout_ ],
-    post: [ finish_ ],
-    attach(window = options.window) {
-      attach(window, this, options);
-      return this;
-    },
-    timeout(delay, handler) {
-      timeout_ = replace(
-        this.pre,
-        timeout(delay || options.timeout, handler || finish_),
-        timeout_
-      );
-      return this;
-    }
-  };
 }

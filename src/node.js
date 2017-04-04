@@ -1,4 +1,22 @@
-import { replace, noop } from './util';
+import { replace, noop } from './_util';
+
+export function mixin(options = {}) {
+  let finish_ = finish();
+  let timeout_ = timeout(options.timeout, finish_);
+
+  return {
+    pre: [ timeout_ ],
+    post: [ finish_ ],
+    timeout(delay, handler) {
+      timeout_ = replace(
+        this.pre,
+        timeout(delay || options.timeout, handler || finish_),
+        timeout_
+      );
+      return this;
+    }
+  };
+}
 
 export function finish() {
   return function (req, res, next = noop) {
@@ -20,29 +38,5 @@ export function timeout(delay, handler = finish()) {
       });
     }
     next();
-  };
-}
-
-export function request() {
-  return function (req, res, next) {
-    next();
-  };
-}
-
-export function mixin(options = {}) {
-  let finish_ = finish();
-  let timeout_ = timeout(options.timeout, finish_);
-
-  return {
-    pre: [ timeout_ ],
-    post: [ finish_ ],
-    timeout(delay, handler) {
-      timeout_ = replace(
-        this.pre,
-        timeout(delay || options.timeout, handler || finish_),
-        timeout_
-      );
-      return this;
-    }
   };
 }
