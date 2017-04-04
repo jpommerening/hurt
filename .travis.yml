@@ -41,10 +41,10 @@ matrix:
     env: TEST_SUITE="test/e2e/browser" BROWSER="safari" PLATFORM="macOS 10.12"
 
 script:
-  - npm test $TEST_SUITE
+  - yarn test -- $TEST_SUITE
 
 after_success:
   - if test -n "$CODECLIMATE" ; then
-      npm install -g codeclimate-test-reporter nyc ;
+      yarn global add codeclimate-test-reporter nyc ;
       nyc report --reporter=text-lcov | codeclimate-test-reporter ;
     fi
