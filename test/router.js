@@ -57,51 +57,78 @@ describe('router()', () => {
       });
       fn(() => {});
     });
+
+    it('returns the router instance', () => {
+      const fn = router();
+      expect(fn.use()).to.equal(fn);
+    });
   });
 
   describe('#mixin(...mixins)', () => {
+    it('can be called to mix other mixin instances into the router instance', () => {
+      const fn = router();
+      fn.mixin({ test: [1] }, { test: [2] });
+      expect(fn.test).to.eql([1, 2]);
+    });
+
+    it('returns the router instance', () => {
+      const fn = router();
+      expect(fn.use()).to.equal(fn);
+    });
   });
 
-  it('exposes an array property `pre` to register handler to be called before processing the stack', () => {
-    let step = 0;
-    const fn = router();
-    expect(fn.pre).to.be.an('array');
-    fn.pre.push(next => {
-      expect(step).to.equal(0);
-      step++;
-      next();
+  describe('#pre', () => {
+    it('is an array', () => {
+      const fn = router();
+      expect(fn.pre).to.be.an('array');
     });
-    fn.use(next => {
-      expect(step).to.equal(1);
-      step++;
-      next();
+
+    it('can be used to register handlers to be called before processing the stack', () => {
+      let step = 0;
+      const fn = router();
+      fn.pre.push(next => {
+        expect(step).to.equal(0);
+        step++;
+        next();
+      });
+      fn.use(next => {
+        expect(step).to.equal(1);
+        step++;
+        next();
+      });
+      fn(() => {
+        expect(step).to.equal(2);
+        step++;
+      });
+      expect(step).to.equal(3);
     });
-    fn(() => {
-      expect(step).to.equal(2);
-      step++;
-    });
-    expect(step).to.equal(3);
   });
 
-  it('exposes an array property `post` to register handler to be called after processing the stack', () => {
-    let step = 0;
-    const fn = router();
-    expect(fn.post).to.be.an('array');
-    fn.post.push(next => {
-      expect(step).to.equal(1);
-      step++;
-      next();
+  describe('#post', () => {
+    it('is an array', () => {
+      const fn = router();
+      expect(fn.post).to.be.an('array');
     });
-    fn.use(next => {
-      expect(step).to.equal(0);
-      step++;
-      next();
+
+    it('can be used to register handlers to be called after processing the stack', () => {
+      let step = 0;
+      const fn = router();
+      fn.post.push(next => {
+        expect(step).to.equal(1);
+        step++;
+        next();
+      });
+      fn.use(next => {
+        expect(step).to.equal(0);
+        step++;
+        next();
+      });
+      fn(() => {
+        expect(step).to.equal(2);
+        step++;
+      });
+      expect(step).to.equal(3);
     });
-    fn(() => {
-      expect(step).to.equal(2);
-      step++;
-    });
-    expect(step).to.equal(3);
   });
 
   it('accepts a `mixins` option to override default mixins', () => {

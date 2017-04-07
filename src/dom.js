@@ -36,7 +36,7 @@ export function finish() {
 }
 
 export function timeout(delay, handler = noop) {
-  return function(req, res, next) {
+  return function (req, res, next) {
     if (delay) {
       res.timeout = setTimeout(() => {
         if (typeof this.emit === 'function') {
@@ -87,7 +87,7 @@ export function attach(window, handler, options = {}) {
     }
   });
 
-  window.addEventListener('popstate', function (event) {
+  window.addEventListener('popstate', event => {
     run({ url: location.href, replace: true, state: history.state, event });
   });
 

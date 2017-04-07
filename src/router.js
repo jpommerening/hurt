@@ -28,7 +28,7 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
     use(...args) {
       const route = this.route( (typeof args[0] === 'object') ?
         args.shift() :
-        { name: args[0].name } );
+        null );
       stack.push.apply(stack, args);
       routes.push(route);
       return this;
