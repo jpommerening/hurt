@@ -4,7 +4,7 @@ import { expect } from 'chai';
 
 import router from '../src/router';
 
-describe('router()', () => {
+describe('router([options])', () => {
 
   let mixins;
 
@@ -51,8 +51,27 @@ describe('router()', () => {
 
     it('allows to pass route options as the first argument', () => {
       const fn = router();
-      fn.use({ name: 'test' }, next => {
-        //expect(this.route.name).to.equal('test');
+      let called = false;
+      fn.use({ name: 'test' }, function (next) {
+        called = true;
+        next();
+      });
+      fn(() => {});
+      expect(called).to.equal(true);
+    });
+
+    it('allows being called without function args', () => {
+      const fn = router();
+      fn.use({ name: 'test' });
+      fn(() => {});
+    });
+
+    it('exposes the correct route object', () => {
+      const fn = router();
+      fn.use({ name: 'test1' }, next => {
+        next();
+      });
+      fn.use({ name: 'test2' }, next => {
         next();
       });
       fn(() => {});

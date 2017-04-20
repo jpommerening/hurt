@@ -1,4 +1,5 @@
 import handler from './handler';
+import route from './route';
 import mixin from './mixin';
 
 export default function router({ mixins = router.mixins, ...options } = {}) {
@@ -12,8 +13,6 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
     handler(post)
   ]);
 
-  const routes = [];
-
   // wrap to bind `this` to the returned router
   function fn() {
     return base.apply(fn, arguments);
@@ -22,15 +21,11 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
   mixin(fn, {
     pre,
     post,
-    route(options) {
-      return options;
+    route(...args) {
+      return route(...args);
     },
     use(...args) {
-      const route = this.route( (typeof args[0] === 'object') ?
-        args.shift() :
-        null );
-      stack.push.apply(stack, args);
-      routes.push(route);
+      stack.push(this.route(...args));
       return this;
     },
     mixin(...mixins) {
