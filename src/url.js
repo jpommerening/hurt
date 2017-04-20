@@ -73,7 +73,7 @@ export function mixin() {
         }
       }
     ],
-    use: function (url, ...stack) {
+    use(url, ...stack) {
       let prefix;
       let params;
 

@@ -1,6 +1,7 @@
 import handler from './handler';
 import route from './route';
 import mixin from './mixin';
+import { proxy } from './_util';
 
 export default function router({ mixins = router.mixins, ...options } = {}) {
   const pre = [];
@@ -25,7 +26,10 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
       return route(...args);
     },
     use(...args) {
-      stack.push(this.route(...args));
+      const route = this.route(...args);
+      const context = proxy(this, 'route');
+      context.route = route;
+      stack.push((...args) => route.apply(this, args));
       return this;
     },
     mixin(...mixins) {

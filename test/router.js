@@ -23,6 +23,18 @@ describe('router([options])', () => {
     fn(done);
   });
 
+  describe('#route(...options)', () => {
+    it('can be called to create a route', () => {
+      const fn = router();
+      expect(fn.route).to.be.a('function');
+      const route = fn.route({ name: 'test' }, next => {
+        next();
+      });
+      expect(route).to.be.a('function');
+      expect(route.name).to.equal('test');
+    });
+  });
+
   describe('#use([options], ...args)', () => {
     it('can be called to register handlers', () => {
       let step = 0;
