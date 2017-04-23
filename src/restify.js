@@ -43,7 +43,7 @@ function create(router, options = {}) {
       return name;
     },
     get(name, req, callback) {
-      // TODO!
+      router.route({ name })
       router(req, err => {
         if (err) {
           callback(err);

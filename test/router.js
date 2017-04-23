@@ -80,10 +80,12 @@ describe('router([options])', () => {
 
     it('exposes the correct route object', () => {
       const fn = router();
-      fn.use({ name: 'test1' }, next => {
+      fn.use({ name: 'test1' }, function (next) {
+        expect(this.route.name).to.equal('test1');
         next();
       });
-      fn.use({ name: 'test2' }, next => {
+      fn.use({ name: 'test2' }, function (next) {
+        expect(this.route.name).to.equal('test2');
         next();
       });
       fn(() => {});

@@ -22,14 +22,12 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
   mixin(fn, {
     pre,
     post,
-    route(...args) {
-      return route(...args);
-    },
+    route,
     use(...args) {
       const route = this.route(...args);
       const context = proxy(this, 'route');
       context.route = route;
-      stack.push((...args) => route.apply(this, args));
+      stack.push((...args) => context.route(...args));
       return this;
     },
     mixin(...mixins) {

@@ -51,4 +51,28 @@ describe('route(...options)', () => {
       });
     });
   });
+
+  describe('when called with route objects', () => {
+    it('copies properties from the given routes', () => {
+      const fn = route(route({ foo: 1 }), route({ bar: 2 }));
+      expect(fn.foo).to.equal(1);
+      expect(fn.bar).to.equal(2);
+    });
+
+    describe('the returned function', () => {
+      it('calls the given route functions in the order they were given', () => {
+        const called = [];
+        const fn = route(route({ name: 'name' }, next => {
+          called.push('foo');
+          next();
+        }), route(next => {
+          called.push('bar');
+          next();
+        }));
+        fn(() => {});
+        expect(fn.name).to.equal('name');
+        expect(called).to.eql(['foo', 'bar']);
+      });
+    });
+  });
 });
