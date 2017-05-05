@@ -3,6 +3,7 @@
 import { expect } from 'chai';
 
 import { mixin } from '../src/url';
+import route from '../src/route';
 import mix from '../src/mixin';
 
 describe('url#mixin()', () => {
@@ -19,6 +20,7 @@ describe('url#mixin()', () => {
     host = {
       pre: [],
       post: [],
+      route,
       use(...args) {
         call = { this: this, args };
         stack.push(...args);

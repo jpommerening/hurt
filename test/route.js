@@ -59,6 +59,11 @@ describe('route(...options)', () => {
       expect(fn.bar).to.equal(2);
     });
 
+    it('returns the given route if it is the only parameter', () => {
+      const fn = route({ foo: 1 });
+      expect(route(fn)).to.equal(fn);
+    });
+
     describe('the returned function', () => {
       it('calls the given route functions in the order they were given', () => {
         const called = [];

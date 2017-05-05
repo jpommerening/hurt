@@ -22,7 +22,7 @@
   "browser": "lib/browser.js",
   "scripts": {
     "prepublish": "babel -d lib src && webpack -p",
-    "test": "nyc -n src mocha --compilers js:babel-core/register",
+    "test": "nyc -n src -i babel-core/register mocha",
     "posttest": "eslint src test",
     "prepush": "npm test",
     "postmerge": "npm install",
@@ -35,6 +35,7 @@
   "devDependencies": {
     "babel-cli": "^6.18.0",
     "babel-core": "^6.24.1",
+    "babel-loader": "^6.24.1",
     "babel-plugin-transform-object-rest-spread": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "chai": "^3.5.0",

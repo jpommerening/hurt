@@ -33,14 +33,16 @@ import { Users } from './app/model';
 const router = hurt();
 
 router.get('/users/{name}', function (req, res, next) {
-  const user = Users.get({ name: req.params.name });
+  const { name } = req.params;
+  const user = Users.get({ name });
   res.send(200, user);
 });
 
 router.get('/users{?q,page}', function (req, res, next) {
+  const { q, page = 0 } = req.params;
   const length = 10;
-  const start = (req.params.page || 0) * lenth;
-  const users = Users.find({ q: req.params.q }).slice(start, length);
+  const start = page * length;
+  const users = Users.find({ q }).slice(start, length);
   res.send(200, users);
 });
 ```

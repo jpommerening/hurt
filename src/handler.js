@@ -3,11 +3,12 @@
  * keeping the call stack flat in case `next` is called synchronously.
  *
  * @param {Array<Function>} stack
+ * @param {*} [context]
  * @return {Function}
  */
-export default function handler(stack) {
+export default function handler(stack, context) {
   return function (...args) {
-    const self = this;
+    const self = context || this;
     const next = args.pop();
 
     let index = 0;

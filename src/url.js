@@ -31,9 +31,7 @@ function regExpParams(regexp) {
   };
 }
 
-function routeHandler(params, stack) {
-  const fn = handler(stack);
-
+function routeHandler(params, fn) {
   return function (req, ...args) {
     const next = args.pop();
     const match = params(req.url);
@@ -57,8 +55,9 @@ function routeHandler(params, stack) {
   };
 }
 
-export function mixin() {
-  const tries = [{}];
+export function mixin({ base } = {}) {
+  const EMPTY = {};
+  const tries = [EMPTY];
   const notfound = [];
   const handle = handler(notfound);
 
@@ -67,15 +66,31 @@ export function mixin() {
       function (req, ...args) {
         if (!req.handled) {
           handle.call(this, req, ...args);
-        } else {
+        }
+        else {
           const next = args[ args.length - 1 ];
           next();
         }
       }
     ],
-    use(url, ...stack) {
+    base(url) {
+      if (url) {
+        base = url;
+      }
+      return base;
+    },
+    use(options, ...stack) {
+      let url;
       let prefix;
       let params;
+
+      if (typeof options === 'string' || options instanceof RegExp) {
+        url = options;
+        options = { url };
+      }
+      else {
+        url = options.url;
+      }
 
       if (typeof url === 'string') {
         prefix = templatePrefix(url);
@@ -86,24 +101,27 @@ export function mixin() {
         params = regExpParams(url);
       }
       else {
-        tries.push({});
-        return this.use(url, ...stack);
+        if (tries[tries.length - 1] !== EMPTY) {
+          tries.push(EMPTY);
+        }
+        return this.use(options, ...stack);
       }
 
+      const route = this.route(options, ...stack)
       const trie = tries.pop();
       const index = tries.length;
 
-      tries.push(add(trie, prefix, [ routeHandler(params, stack) ]));
+      tries.push(add(trie, prefix, [ routeHandler(params, route) ]));
 
-      if (Object.keys(trie).length === 0) {
+      if (trie === EMPTY) {
         return this.use(function (req, ...args) {
           const stack = match(tries[ index ], req.url, []);
-          const next = args.pop();
 
           if (stack.length) {
-            handler(stack).call(this, req, ...args, next);
+            handler(stack).call(this, req, ...args);
           }
           else {
+            const next = args[ args.length - 1 ];
             next();
           }
         });
@@ -113,7 +131,7 @@ export function mixin() {
       }
     },
     notfound(...stack) {
-      notfound.push.apply(notfound, stack);
+      notfound.push(...stack);
       return this;
     }
   };

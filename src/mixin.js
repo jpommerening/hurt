@@ -18,6 +18,11 @@ export default function mixin(target, mixin) {
       descriptor.value = bind(descriptor.value, exists ? proxy(target, name) : target);
     }
 
-    Object.defineProperty(target, name, descriptor)
+    try {
+      Object.defineProperty(target, name, descriptor)
+    }
+    catch (e) {
+      //eslint-disable-no-empty
+    }
   });
 }

@@ -20,16 +20,19 @@ var SERVED_FILES = {
 };
 
 function instrument(config) {
+  var context = config.context;
+  var libdir = path.join(context, 'lib/');
+  var srcdir = path.join(context, 'src/');
   return {
-    context: config.context,
-    entry: config.entry,
+    context: context,
+    entry: config.entry.replace(libdir, srcdir),
     output: config.output,
     module: {
       loaders: [
         {
           test: /\.js$/,
-          include: path.resolve(__dirname, '../../../lib'),
-          loader: 'istanbul-instrumenter-loader'
+          include: srcdir,
+          loader: 'istanbul-instrumenter-loader!babel-loader'
         }
       ].concat(config.module && config.module.loaders || [])
     }

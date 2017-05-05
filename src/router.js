@@ -1,5 +1,5 @@
 import handler from './handler';
-import route from './route';
+import { default as route, unshift, push } from './route';
 import mixin from './mixin';
 import { proxy } from './_util';
 
@@ -8,16 +8,12 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
   const stack = [];
   const post = [];
 
-  const base = handler([
-    handler(pre),
-    handler(stack),
-    handler(post)
-  ]);
+  const fn = route(
+    handler(stack)
+  );
 
-  // wrap to bind `this` to the returned router
-  function fn() {
-    return base.apply(fn, arguments);
-  }
+  unshift(fn, handler(pre, fn));
+  push(fn, handler(post, fn));
 
   mixin(fn, {
     pre,

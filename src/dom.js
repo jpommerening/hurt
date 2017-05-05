@@ -1,53 +1,13 @@
-import { replace, noop } from './_util';
-
 export function mixin(options = {}) {
-  let finish_ = finish();
-  let timeout_ = timeout(options.timeout, finish_);
 
   return {
-    pre: [ timeout_ ],
-    post: [ finish_ ],
     attach(window = options.window) {
       attach(window, this, options);
       return this;
-    },
-    timeout(delay, handler) {
-      timeout_ = replace(
-        this.pre,
-        timeout(delay || options.timeout, handler || finish_),
-        timeout_
-      );
-      return this;
     }
   };
 }
 
-export function finish() {
-  return function (req, res, next = noop) {
-    if (res.timeout) {
-      clearTimeout(res.timeout);
-      res.timeout = null;
-    }
-    if (!res.finished) {
-      res.finished = true;
-    }
-    next();
-  };
-}
-
-export function timeout(delay, handler = noop) {
-  return function (req, res, next) {
-    if (delay) {
-      res.timeout = setTimeout(() => {
-        if (typeof this.emit === 'function') {
-          this.emit('timeout', req, res);
-        }
-        handler(req, res, noop);
-      }, delay);
-    }
-    next();
-  };
-}
 
 export function attach(window, handler, options = {}) {
   const {
@@ -97,6 +57,7 @@ export function attach(window, handler, options = {}) {
       replace: options.replace || false,
       state: options.state || {}
     };
+    const res = emptyResponse();
 
     if (url.substr(0, base.length) !== base) {
       return false;
@@ -110,7 +71,7 @@ export function attach(window, handler, options = {}) {
       event.preventDefault();
     }
 
-    handler(req, {}, function (err) {
+    handler(req, res, function (err) {
       if (err) {
         return;
       }
@@ -125,5 +86,26 @@ export function attach(window, handler, options = {}) {
     const a = document.createElement('a');
     a.href = href;
     return a.href;
+  }
+
+  function emptyResponse() {
+    let handle;
+    const res = {
+      setTimeout(timeout, callback) {
+        if (handle) {
+          clearTimeout(handle);
+          handle = null;
+        }
+        if (timeout) {
+          handle = window.setTimeout(callback, timeout);
+        }
+      },
+      end() {
+        res.setTimeout(0);
+        res.finished = true;
+      },
+      finished: false
+    };
+    return res;
   }
 }
