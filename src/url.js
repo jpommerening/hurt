@@ -55,7 +55,7 @@ function routeHandler(params, fn) {
   };
 }
 
-export function mixin({ base } = {}) {
+export function mixin({ base = '' } = {}) {
   const EMPTY = {};
   const tries = [EMPTY];
   const notfound = [];
@@ -74,8 +74,9 @@ export function mixin({ base } = {}) {
       }
     ],
     base(url) {
-      if (url) {
+      if (typeof url === 'string') {
         base = url;
+        return this;
       }
       return base;
     },

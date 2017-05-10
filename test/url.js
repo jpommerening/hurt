@@ -33,6 +33,24 @@ describe('url#mixin()', () => {
     expect(url).to.be.an('object');
   });
 
+  describe('#base([url])', () => {
+
+    beforeEach(() => {
+      mix(host, url);
+    });
+
+    it('is a method of the returned mixin', () => {
+      expect(url).to.have.a.property('base');
+      expect(url.base).to.be.a('function');
+    });
+
+    it('can be used to get and set the current base-url', () => {
+      expect(host.base()).to.equal('');
+      expect(host.base('/test')).to.equal(host);
+      expect(host.base()).to.equal('/test');
+    });
+  });
+
   describe('#use(url, ...stack)', () => {
 
     beforeEach(() => {
@@ -51,7 +69,7 @@ describe('url#mixin()', () => {
       });
 
       it('calls the host object\'s use() method with a custom handler', () => {
-        expect(host.use('/path', () => {}));
+        host.use('/path', () => {});
         expect(call).to.have.a.property('args');
         expect(call.args).to.have.length(1);
         expect(call.args[0]).to.be.a('function');
@@ -91,11 +109,12 @@ describe('url#mixin()', () => {
     describe('when called with a RegExp', () => {
 
       it('returns `this`', () => {
-        expect(host.use('/path', () => {})).to.equal(host);
+        expect(host.use(/\/path/, () => {})).to.equal(host);
       });
 
       it('calls the host object\'s use() method with a custom handler', () => {
-        expect(host.use(/\/path/, () => {}));
+        host.use(/\/path/, () => {});
+
         expect(call).to.have.a.property('args');
         expect(call.args).to.have.length(1);
         expect(call.args[0]).to.be.a('function');
@@ -147,6 +166,43 @@ describe('url#mixin()', () => {
         expect(called).to.eql(true);
       });
 
+    });
+
+    describe('when called with something that has a `url` property', () => {
+
+      it('returns `this`', () => {
+        expect(host.use({ url: '/path' }, () => {})).to.equal(host);
+      });
+
+      it('calls the host object\'s use() method with a custom handler', () => {
+        host.use({ url: '/path' }, () => {});
+
+        expect(call).to.have.a.property('args');
+        expect(call.args).to.have.length(1);
+        expect(call.args[0]).to.be.a('function');
+
+        host.use({ url: /\/path/ }, () => {});
+
+        expect(call).to.have.a.property('args');
+        expect(call.args).to.have.length(1);
+        expect(call.args[0]).to.be.a('function');
+      });
+
+    });
+
+    describe('when called with something that has no `url` property', () => {
+      it('returns `this`', () => {
+        expect(host.use({ test: 'path' }, () => {})).to.equal(host);
+      });
+
+      it('calls the host object\'s use() method with the arguments it was given', () => {
+        host.use({ test: 'path' }, () => {});
+
+        expect(call).to.have.a.property('args');
+        expect(call.args).to.have.length(2);
+        expect(call.args[0]).to.eql({ test: 'path' });
+        expect(call.args[1]).to.be.a('function');
+      });
     });
 
     describe('when called with a function instead of a URL', () => {
@@ -204,20 +260,35 @@ describe('url#mixin()', () => {
           called.push(5);
           next();
         });
+        host.use((req, next) => {
+          called.push(6);
+          next();
+        });
 
         called = [];
         request('/a');
-        expect(called).to.eql([1, '2a', 3, '4a', 5]);
+        expect(called).to.eql([1, '2a', 3, '4a', 5, 6]);
 
         called = [];
         request('/b');
-        expect(called).to.eql([1, '2b', 3, 5]);
+        expect(called).to.eql([1, '2b', 3, 5, 6]);
 
         called = [];
         request('/c');
-        expect(called).to.eql([1, 3, '4c', 5]);
+        expect(called).to.eql([1, 3, '4c', 5, 6]);
       });
 
+    });
+
+    describe('when called without arguments', () => {
+      it('might throw', () => {
+        try {
+          host.use();
+        }
+        catch (e) {
+          //eslint-disable-no-empty
+        }
+      });
     });
 
   });

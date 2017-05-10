@@ -27,6 +27,7 @@ function instrument(config) {
     context: context,
     entry: config.entry.replace(libdir, srcdir),
     output: config.output,
+    devtool: 'inline-source-map',
     module: {
       loaders: [
         {
