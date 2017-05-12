@@ -37,11 +37,11 @@ matrix:
       sauce_connect: true
     env: TEST_SUITE=test/e2e/browser BROWSER="safari" PLATFORM="macOS 10.12"
 
+script:
+  - yarn test -- $TEST_SUITE
+
 jobs:
   include:
-    - stage: test
-      script:
-        - yarn test -- $TEST_SUITE
     - stage: coverage
       node_js: "node"
       addons:
