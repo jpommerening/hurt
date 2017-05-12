@@ -7,45 +7,47 @@ node_js:
   - 7
 cache: yarn
 env:
-  - TEST_SUITE="test"
-  - TEST_SUITE="test/e2e/connect"
-  - TEST_SUITE="test/e2e/express"
-  - TEST_SUITE="test/e2e/restify"
+  - TEST_SUITE=test
+  - TEST_SUITE=test/e2e/connect
+  - TEST_SUITE=test/e2e/express
+  - TEST_SUITE=test/e2e/restify
 
 matrix:
   fast_finish: true
   allow_failures:
-  - env: TEST_SUITE="test/e2e/browser" BROWSER="firefox"
-  - env: TEST_SUITE="test/e2e/browser" BROWSER="chrome"
-  - env: TEST_SUITE="test/e2e/browser" BROWSER="internet explorer" PLATFORM="Windows 10"
-  - env: TEST_SUITE="test/e2e/browser" BROWSER="safari" PLATFORM="macOS 10.12"
+  - env: TEST_SUITE=test/e2e/browser BROWSER="firefox"
+  - env: TEST_SUITE=test/e2e/browser BROWSER="chrome"
+  - env: TEST_SUITE=test/e2e/browser BROWSER="internet explorer" PLATFORM="Windows 10"
+  - env: TEST_SUITE=test/e2e/browser BROWSER="safari" PLATFORM="macOS 10.12"
   include:
   - node_js: "node"
     addons:
-      code_climate: true
-    env: TEST_SUITE="test test/e2e" CODECLIMATE="true"
+      sauce_connect: true
+    env: TEST_SUITE=test/e2e/browser BROWSER="firefox"
   - node_js: "node"
     addons:
       sauce_connect: true
-    env: TEST_SUITE="test/e2e/browser" BROWSER="firefox"
+    env: TEST_SUITE=test/e2e/browser BROWSER="chrome"
   - node_js: "node"
     addons:
       sauce_connect: true
-    env: TEST_SUITE="test/e2e/browser" BROWSER="chrome"
+    env: TEST_SUITE=test/e2e/browser BROWSER="internet explorer" PLATFORM="Windows 10"
   - node_js: "node"
     addons:
       sauce_connect: true
-    env: TEST_SUITE="test/e2e/browser" BROWSER="internet explorer" PLATFORM="Windows 10"
-  - node_js: "node"
-    addons:
-      sauce_connect: true
-    env: TEST_SUITE="test/e2e/browser" BROWSER="safari" PLATFORM="macOS 10.12"
+    env: TEST_SUITE=test/e2e/browser BROWSER="safari" PLATFORM="macOS 10.12"
 
-script:
-  - yarn test -- $TEST_SUITE
-
-after_success:
-  - if test -n "$CODECLIMATE" ; then
-      yarn global add codeclimate-test-reporter nyc ;
-      nyc report --reporter=text-lcov | codeclimate-test-reporter ;
-    fi
+jobs:
+  include:
+    - stage: test
+      script:
+        - yarn test -- $TEST_SUITE
+    - stage: coverage
+      node_js: "node"
+      addons:
+        code_climate: true
+      script:
+        - yarn test -- test test/e2e
+      after_success:
+        - yarn global add codeclimate-test-reporter nyc ;
+          nyc report --reporter=text-lcov | codeclimate-test-reporter
