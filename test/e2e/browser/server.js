@@ -13,34 +13,15 @@ var CONTENT_TYPES = {
   '.js': 'application/javascript'
 };
 
+var FS = new MemoryFS();
+
 var SERVED_FILES = {
   '/index.html': file(path.join(__dirname, 'index.html')),
-  '/lodash.template.js': library('lodash.template'),
-  '/hurt.js': bundle(instrument(config), 'hurt.js')
+  '/lodash.template.js': library('lodash.template', FS),
+  '/hurt.js': bundle(config, 'hurt.js', FS)
 };
 
-function instrument(config) {
-  var context = config.context;
-  var libdir = path.join(context, 'lib/');
-  var srcdir = path.join(context, 'src/');
-  return {
-    context: context,
-    entry: config.entry.replace(libdir, srcdir),
-    output: config.output,
-    devtool: 'inline-source-map',
-    module: {
-      loaders: [
-        {
-          test: /\.js$/,
-          include: srcdir,
-          loader: 'babel-loader'
-        }
-      ].concat(config.module && config.module.loaders || [])
-    }
-  };
-}
-
-function library(name) {
+function library(name, fs) {
   return bundle({
     entry: require.resolve(name),
     output: {
@@ -49,13 +30,12 @@ function library(name) {
       path: config.output.path,
       filename: name + '.js'
     }
-  }, name + '.js');
+  }, name + '.js', fs);
 }
 
-function bundle(config, filename) {
+function bundle(config, filename, fs) {
   var ext = path.extname(filename);
   var type = CONTENT_TYPES[ext] || 'text/plain';
-  var fs = new MemoryFS();
   var compiler = webpack(config);
   compiler.outputFileSystem = fs;
 
