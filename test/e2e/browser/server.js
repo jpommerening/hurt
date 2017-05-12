@@ -33,7 +33,7 @@ function instrument(config) {
         {
           test: /\.js$/,
           include: srcdir,
-          loader: 'istanbul-instrumenter-loader!babel-loader'
+          loader: 'babel-loader'
         }
       ].concat(config.module && config.module.loaders || [])
     }

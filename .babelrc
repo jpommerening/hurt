@@ -1,5 +1,10 @@
 {
   "presets": [ "es2015" ],
   "plugins": [ "transform-object-rest-spread" ],
-  "sourceMaps": "inline"
+  "sourceMaps": "inline",
+  "env": {
+    "test": {
+      "plugins": [ "istanbul" ]
+    }
+  }
 }
