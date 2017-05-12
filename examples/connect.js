@@ -1,15 +1,16 @@
 import connect from 'connect';
 import hurt from 'hurt';
+import log from 'log';
 
 const app = connect();
 const router = hurt();
 
 router.use(function(req, res, next) {
-  console.log(new Date());
+  log.info('%s %s', req.method, req.url);
   next();
 });
 
-router.use('/channel/{chan}', function(req, res, next) {
+router.use('/channel/{chan}', function(req, res) {
   res.send(200, req.param.chan);
 });
 

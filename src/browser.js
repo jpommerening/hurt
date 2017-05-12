@@ -1,11 +1,7 @@
 /* global module */
-import router from './router';
+import router from './common';
 import { mixin as dom } from './dom';
-import { mixin as events } from './events';
-import { mixin as named } from './named';
-import { mixin as timeout } from './timeout';
-import { mixin as url } from './url';
 
-router.mixins.push( events, dom, timeout, named, url );
+router.mixins.unshift( dom );
 
 module.exports = router;

@@ -49,5 +49,5 @@ jobs:
       script:
         - yarn test -- test test/e2e
       after_success:
-        - yarn global add codeclimate-test-reporter nyc ;
-          nyc report --reporter=text-lcov | codeclimate-test-reporter
+        - yarn global add codeclimate-test-reporter nyc
+        - nyc report --reporter=text-lcov | codeclimate-test-reporter
