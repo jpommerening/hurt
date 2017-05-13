@@ -22,7 +22,8 @@
   "browser": "lib/browser.js",
   "scripts": {
     "prepublish": "babel -d lib src && webpack -p",
-    "test": "cross-env NODE_ENV=test nyc -n src mocha",
+    "test": "nyc -s -n src mocha",
+    "coverage": "cross-env NODE_ENV=coverage nyc -n src mocha",
     "posttest": "eslint src test",
     "prepush": "npm test",
     "postmerge": "npm install",

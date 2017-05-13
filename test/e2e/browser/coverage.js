@@ -7,13 +7,18 @@ export default function createReport(coverage) {
     return;
   }
 
-  const coverageMap = istanbul.libCoverage.createCoverageMap(coverage);
-  const sourceMapStore = istanbul.libSourceMaps.createSourceMapStore();
-  const remappedCoverage = sourceMapStore.transformCoverage(coverageMap).map;
-  const currentCoverage = istanbul.libCoverage.createCoverageMap(__coverage__);
+  try {
+    const coverageMap = istanbul.libCoverage.createCoverageMap(coverage);
+    const sourceMapStore = istanbul.libSourceMaps.createSourceMapStore();
+    const remappedCoverage = sourceMapStore.transformCoverage(coverageMap).map;
+    const currentCoverage = istanbul.libCoverage.createCoverageMap(__coverage__);
 
-  remappedCoverage.files().forEach(filename => {
-    currentCoverage.addFileCoverage(remappedCoverage.fileCoverageFor(filename));
-    __coverage__[filename] = JSON.parse(JSON.stringify(currentCoverage.fileCoverageFor(filename)));
-  });
+    remappedCoverage.files().forEach(filename => {
+      currentCoverage.addFileCoverage(remappedCoverage.fileCoverageFor(filename));
+      __coverage__[filename] = JSON.parse(JSON.stringify(currentCoverage.fileCoverageFor(filename)));
+    });
+  }
+  catch (c) {
+    // ignored
+  }
 }

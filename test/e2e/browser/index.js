@@ -57,6 +57,7 @@ describe('e2e browser', () => {
       this.timeout(45000);
 
       browser
+        .setAsyncScriptTimeout(20000)
         .execute('return window.__coverage__;')
         .then(coverage, () => {})
         .quit()

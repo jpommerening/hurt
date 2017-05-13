@@ -3,7 +3,7 @@
   "plugins": [ "transform-object-rest-spread" ],
   "sourceMaps": "inline",
   "env": {
-    "test": {
+    "coverage": {
       "plugins": [ "istanbul" ]
     }
   }
