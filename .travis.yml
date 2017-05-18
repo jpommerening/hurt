@@ -7,10 +7,7 @@ node_js:
   - 6
   - 7
 env:
-  - TEST_SUITE=test
-  - TEST_SUITE=test/e2e/connect
-  - TEST_SUITE=test/e2e/express
-  - TEST_SUITE=test/e2e/restify
+  TEST_SUITE=test
 
 stage: test
 script:
@@ -19,28 +16,37 @@ script:
 jobs:
   fast_finish: true
   allow_failures:
-    - stage: test
-      env: TEST_SUITE=test/e2e/browser BROWSER="firefox"
-    - stage: test
-      env: TEST_SUITE=test/e2e/browser BROWSER="chrome"
-    - stage: test
+    - stage: end to end
       env: TEST_SUITE=test/e2e/browser BROWSER="internet explorer" PLATFORM="Windows 10"
-    - stage: test
+    - stage: end to end
       env: TEST_SUITE=test/e2e/browser BROWSER="safari" PLATFORM="macOS 10.12"
   include:
-    - node_js: "node"
+    - stage: end to end
+      node_js: "node"
+      env: TEST_SUITE=test/e2e/connect
+    - stage: end to end
+      node_js: "node"
+      env: TEST_SUITE=test/e2e/express
+    - stage: end to end
+      node_js: "node"
+      env: TEST_SUITE=test/e2e/restify
+    - stage: end to end
+      node_js: "node"
       addons:
         sauce_connect: true
       env: TEST_SUITE=test/e2e/browser BROWSER="firefox"
-    - node_js: "node"
+    - stage: end to end
+      node_js: "node"
       addons:
         sauce_connect: true
       env: TEST_SUITE=test/e2e/browser BROWSER="chrome"
-    - node_js: "node"
+    - stage: end to end
+      node_js: "node"
       addons:
         sauce_connect: true
       env: TEST_SUITE=test/e2e/browser BROWSER="internet explorer" PLATFORM="Windows 10"
-    - node_js: "node"
+    - stage: end to end
+      node_js: "node"
       addons:
         sauce_connect: true
       env: TEST_SUITE=test/e2e/browser BROWSER="safari" PLATFORM="macOS 10.12"
