@@ -1,6 +1,6 @@
 {
   "name": "hurt",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "description": "HTTP and SPA routing using RFC 6570 URI templates",
   "keywords": [
     "http",
