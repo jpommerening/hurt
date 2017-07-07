@@ -6,6 +6,9 @@ var MemoryFS = require('memory-fs');
 var config = require('../../../webpack.config.js');
 var pkg = require('../../../package.json');
 
+// HACK: disable harmony modules because i hate phantomjs
+delete config.module.loaders[0].use[0].options;
+
 var PORT = process.env.PORT || process.env.npm_package_config_port || pkg.config.port;
 
 var CONTENT_TYPES = {
@@ -40,7 +43,7 @@ function bundle(config, filename, fs) {
   compiler.outputFileSystem = fs;
 
   return function (req, res) {
-    compiler.run(function (err/*, stats*/) {
+    compiler.run(function (err) {
       if (err) {
         return servererror(req, res)(err);
       }
