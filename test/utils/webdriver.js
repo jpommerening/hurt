@@ -34,7 +34,7 @@ export function capabilities() {
     caps['platform'] = process.env.PLATFORM;
   }
   if (process.env.SAUCE_USERNAME && process.env.SAUCE_ACCESS_KEY) {
-    caps['seleniumVersion'] = '3.0.1';
+    caps['seleniumVersion'] = '3.3.1';
 
     if (process.env.TRAVIS && caps['browserName']) {
       caps['tunnel-identifier'] = process.env.TRAVIS_JOB_NUMBER;
