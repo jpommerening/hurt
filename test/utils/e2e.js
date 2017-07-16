@@ -1,7 +1,6 @@
 import template from 'lodash.template';
 import http from 'http';
 
-
 export function respond(response) {
   const t = template(response, {
     evaluate: false,

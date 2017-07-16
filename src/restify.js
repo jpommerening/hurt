@@ -1,11 +1,14 @@
 import router from './router';
 import { mixin as events } from './events';
+import { mixin as named } from './named';
+import { mixin as regexpRoute } from './regexp-route';
+import { mixin as templateRoute } from './template-route';
 import { mixin as url } from './url';
 
 export default function restify({ mixins = restify.mixins, ...options } = {}) {
   return create(router({ mixins, ...options }), options);
 }
-restify.mixins = [ events, url ];
+restify.mixins = [ events, named, regexpRoute, templateRoute, url ];
 
 export function mixin(options) {
   return {

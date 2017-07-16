@@ -1,40 +1,12 @@
 import { add, match } from './trie';
 import handler from './handler';
 
-import uriTemplate from 'uri-templates';
+const EMPTY = {};
 
-function templatePrefix(template) {
-  const index = template.indexOf('{');
-  const prefix = index < 0 ? template : template.substr(0, index);
-  return prefix;
-}
-
-function templateParams(template) {
-  const t = uriTemplate(template);
-  return url => {
-    const match = t.fromUri(url);
-    return match;
-  };
-}
-
-function regExpPrefix(regexp) {
-  const source = regexp.source.replace(/(^\^|\$$)/g, '');
-  const match = /(^|[^\\])([[({.]|\\[dDsSwWxu])/.exec(source);
-  const prefix = match ? source.substr(0, match.index + match[1].length) : source;
-  return prefix.replace(/\\([/\\().*\[\]])/g, '$1');
-}
-
-function regExpParams(regexp) {
-  return url => {
-    const match = regexp.exec(url);
-    return match && (match[0] === url) && match;
-  };
-}
-
-function routeHandler(params, fn) {
+function routeHandler(route) {
   return function (req, ...args) {
     const next = args.pop();
-    const match = params(req.url);
+    const match = route.match(req);
 
     if (match) {
       req.params = {
@@ -42,7 +14,7 @@ function routeHandler(params, fn) {
         ...match
       };
 
-      fn.call(this, req, ...args, function (err) {
+      route.call(this, req, ...args, err => {
         if (!err) {
           req.handled = true;
         }
@@ -56,7 +28,6 @@ function routeHandler(params, fn) {
 }
 
 export function mixin({ base = '' } = {}) {
-  const EMPTY = {};
   const tries = [EMPTY];
   const notfound = [];
   const handle = handler(notfound);
@@ -80,39 +51,20 @@ export function mixin({ base = '' } = {}) {
       }
       return base;
     },
-    use(options, ...stack) {
-      let url;
-      let prefix;
-      let params;
+    use(...stack) {
+      const route = this.route(...stack)
+      const index = tries.length - 1;
 
-      if (typeof options === 'string' || options instanceof RegExp) {
-        url = options;
-        options = { url };
-      }
-      else {
-        url = options.url;
-      }
-
-      if (typeof url === 'string') {
-        prefix = templatePrefix(url);
-        params = templateParams(url);
-      }
-      else if (url instanceof RegExp) {
-        prefix = regExpPrefix(url);
-        params = regExpParams(url);
-      }
-      else {
-        if (tries[tries.length - 1] !== EMPTY) {
+      if (!route.prefix) {
+        if (tries[index] !== EMPTY) {
           tries.push(EMPTY);
         }
-        return this.use(options, ...stack);
+        return this.use(route);
       }
 
-      const route = this.route(options, ...stack)
       const trie = tries.pop();
-      const index = tries.length;
 
-      tries.push(add(trie, prefix, [ routeHandler(params, route) ]));
+      tries.push(add(trie, route.prefix, [ routeHandler(route) ]));
 
       if (trie === EMPTY) {
         return this.use(function (req, ...args) {

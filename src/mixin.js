@@ -3,7 +3,6 @@ import { proxy, bind } from './_util';
 const hasOwnProperty = Object.prototype.hasOwnProperty;
 const arrayPush = Array.prototype.push;
 
-
 export default function mixin(target, mixin) {
   Object.getOwnPropertyNames(mixin).forEach(name => {
     const descriptor = Object.getOwnPropertyDescriptor(mixin, name)

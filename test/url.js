@@ -6,6 +6,9 @@ import { mixin } from '../src/url';
 import route from '../src/route';
 import mix from '../src/mixin';
 
+import { mixin as regexpMixin } from '../src/regexp-route';
+import { mixin as templateMixin } from '../src/template-route';
+
 describe('url#mixin()', () => {
 
   let url;
@@ -54,6 +57,8 @@ describe('url#mixin()', () => {
   describe('#use(url, ...stack)', () => {
 
     beforeEach(() => {
+      mix(host, regexpMixin());
+      mix(host, templateMixin());
       mix(host, url);
     });
 
@@ -195,13 +200,12 @@ describe('url#mixin()', () => {
         expect(host.use({ test: 'path' }, () => {})).to.equal(host);
       });
 
-      it('calls the host object\'s use() method with the arguments it was given', () => {
+      it('calls the host object\'s use() method with the handler returned from route()', () => {
         host.use({ test: 'path' }, () => {});
 
         expect(call).to.have.a.property('args');
-        expect(call.args).to.have.length(2);
-        expect(call.args[0]).to.eql({ test: 'path' });
-        expect(call.args[1]).to.be.a('function');
+        expect(call.args).to.have.length(1);
+        expect(call.args[0]).to.be.a('function');
       });
     });
 
@@ -213,12 +217,13 @@ describe('url#mixin()', () => {
         expect(host.use(fn1, fn2)).to.equal(host);
       });
 
-      it('passes parameters unmodified to the host object\'s use() method', () => {
+      it('calls the host object\'s use() method with the handler returned from route()', () => {
         const fn1 = () => {};
         const fn2 = () => {};
         host.use(fn1, fn2);
         expect(call).to.have.a.property('args');
-        expect(call.args).to.eql([fn1, fn2]);
+        expect(call.args).to.have.length(1);
+        expect(call.args[0]).to.be.a('function');
       });
 
       it('calls the host object\'s use() method with `this` referencing the host object', () => {
@@ -296,6 +301,8 @@ describe('url#mixin()', () => {
   describe('#notfound(...stack)', () => {
 
     beforeEach(() => {
+      mix(host, regexpMixin());
+      mix(host, templateMixin());
       mix(host, url);
 
       host.use('/path', (req, next) => {

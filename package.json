@@ -23,11 +23,7 @@
   "scripts": {
     "prepublish": "babel -d lib src && webpack -p",
     "test": "nyc -s -n src mocha",
-    "coverage": "cross-env NODE_ENV=coverage nyc -n src mocha",
-    "posttest": "eslint src test",
-    "prepush": "npm test",
-    "postmerge": "npm install",
-    "postrewrite": "npm install"
+    "coverage": "cross-env NODE_ENV=coverage nyc -n src mocha"
   },
   "dependencies": {
     "eventemitter3": "^2.0.2",
@@ -46,7 +42,6 @@
     "cross-env": "^5.0.0",
     "eslint": "^3.12.2",
     "express": "^4.14.0",
-    "husky": "^0.12.0",
     "istanbul-api": "^1.1.1",
     "lodash.template": "^4.4.0",
     "memory-fs": "^0.4.1",
@@ -54,7 +49,6 @@
     "nyc": "^10.1.2",
     "phantomjs-prebuilt": "^2.1.14",
     "restify": "^4.3.0",
-    "staged-files": "^0.1.2",
     "wd": "^1.1.1",
     "webpack": "^3.1.0"
   },
