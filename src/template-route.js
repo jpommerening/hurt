@@ -1,4 +1,3 @@
-import route from './route';
 import uriTemplate from 'uri-templates';
 
 function getPrefix(template) {
@@ -29,10 +28,6 @@ function updateArgs(args) {
   }
 
   return args;
-}
-
-export default function(...args) {
-  return route(...updateArgs(args));
 }
 
 export function mixin() {

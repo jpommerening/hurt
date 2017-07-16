@@ -1,5 +1,3 @@
-import route from './route';
-
 function getPrefix(regexp) {
   const source = regexp.source.replace(/(^\^|\$$)/g, '');
   const match = /(^|[^\\])([[({.]|\\[dDsSwWxu])/.exec(source);
@@ -30,10 +28,6 @@ function updateArgs(args) {
   }
 
   return args;
-}
-
-export default function(...args) {
-  return route(...updateArgs(args));
 }
 
 export function mixin() {
