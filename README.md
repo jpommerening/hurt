@@ -2,6 +2,11 @@
 
 > **H**TTP routing with **UR**I **t**emplates
 
+[![npm version](https://badge.fury.io/js/hurt.svg)](https://badge.fury.io/js/hurt)
+[![Build Status](https://travis-ci.org/jpommerening/hurt.svg?branch=master)](https://travis-ci.org/jpommerening/hurt)
+[![Test Coverage](https://codeclimate.com/github/jpommerening/hurt/badges/coverage.svg)](https://codeclimate.com/github/jpommerening/hurt/coverage)
+[![Code Climate](https://codeclimate.com/github/jpommerening/hurt/badges/gpa.svg)](https://codeclimate.com/github/jpommerening/hurt)
+
 After all of two minutes browsing [npmjs.org][npm-search] I could not find what
 I was looking for, so I built it myself. How hard can it be, right?
 
