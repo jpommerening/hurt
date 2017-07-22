@@ -7,9 +7,9 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
   const pre = [];
   const stack = [];
   const post = [];
-
   const fn = route(
-    handler(stack)
+    options,
+    handler(stack),
   );
 
   unshift(fn, handler(pre, fn));

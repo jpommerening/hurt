@@ -1,23 +1,4 @@
 /**
- * A prefix tree supporting add and filter operations.
- * Inner nodes are represented as objects mapping prefixes to subtrees.
- * Leaf-nodes are arrays containing potential matches.
- */
-export default function trie(root = {}) {
-  return {
-    flatten() {
-      return flatten(root);
-    },
-    match(key, output) {
-      return match(root, key, output);
-    },
-    add(key, ...items) {
-      return root = add(root, key, items);
-    }
-  };
-}
-
-/**
  * Return a new trie containing the items of the given trie plus
  * the given items stored at the given key.
  */

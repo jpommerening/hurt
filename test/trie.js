@@ -182,26 +182,3 @@ describe('trie#match(trie, key[, output])', () => {
   });
 
 });
-
-describe('trie([root])', () => {
-  it('creates a wrapper built of the above methods', () => {
-    const trie = create();
-    expect(trie.flatten).to.be.a('function');
-    expect(trie.match).to.be.a('function');
-    expect(trie.add).to.be.a('function');
-
-    trie.add('one', 1, 2, 3);
-    trie.add('ones', 4);
-    expect(trie.flatten()).to.eql({ one: [1, 2, 3], ones: [4] });
-    expect(trie.match('onesie', [])).to.eql([1, 2, 3, 4]);
-  });
-
-  it('can take an existing trie as immutable base', () => {
-    const base = { on: [1, 2] };
-    const trie = create(base);
-    expect(trie.flatten()).to.eql(base);
-    trie.add('one', 3, 4);
-    expect(trie.flatten()).to.eql({ on: [1, 2], one: [3, 4] });
-    expect(base).to.eql({ on: [1, 2] });
-  });
-});

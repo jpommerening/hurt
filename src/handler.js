@@ -1,6 +1,8 @@
 /**
  * Return a function to process the given list of callbacks,
  * keeping the call stack flat in case `next` is called synchronously.
+ * `next` may be called with a truthy value (eg, an error or a route name)
+ * to jump out of the stack.
  *
  * @param {Array<Function>} stack
  * @param {*} [context]

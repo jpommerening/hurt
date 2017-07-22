@@ -69,14 +69,7 @@ export function mixin({ base = '' } = {}) {
       if (trie === EMPTY) {
         return this.use(function (req, ...args) {
           const stack = match(tries[ index ], req.url, []);
-
-          if (stack.length) {
-            handler(stack).call(this, req, ...args);
-          }
-          else {
-            const next = args[ args.length - 1 ];
-            next();
-          }
+          handler(stack).call(this, req, ...args);
         });
       }
       else {
