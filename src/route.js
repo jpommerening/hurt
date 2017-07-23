@@ -16,6 +16,13 @@ function isroute(arg) {
   return ( typeof arg === 'function' ) && arg[STACK] && arg[OPTIONS];
 }
 
+export function defaults() {
+  return {
+    pre: [],
+    post: []
+  };
+}
+
 export default function route(...args) {
   if (args.length === 1 && isroute(args[0])) {
     return args[0];
@@ -25,7 +32,7 @@ export default function route(...args) {
   const options = {};
   const fn = handler(stack);
 
-  args.forEach(arg => {
+  [ ...args, defaults() ].forEach(arg => {
     if (isroute(arg)) {
       stack.push(...arg[STACK]);
       arg = arg[OPTIONS];
@@ -53,6 +60,9 @@ export default function route(...args) {
 
   fn[STACK] = stack;
   fn[OPTIONS] = options;
+
+  unshift(fn, handler(options.pre, fn));
+  push(fn, handler(options.post, fn));
 
   return fn;
 }
