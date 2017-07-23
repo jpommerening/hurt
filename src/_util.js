@@ -1,3 +1,12 @@
+function SymbolPolyfill(name) {
+  return `${name}-${ ('0000' + (Math.random()*0xffff).toString(16)).substr(-4) }`;
+}
+
+const _Symbol = (typeof Symbol === 'function') ?
+  Symbol :
+  SymbolPolyfill;
+
+export { _Symbol as Symbol };
 
 /**
  * Returns an object prototypicaly proxying the given target, but

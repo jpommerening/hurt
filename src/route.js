@@ -1,4 +1,5 @@
 import handler from './handler';
+import { Symbol } from './_util';
 
 const STACK = Symbol('stack');
 const OPTIONS = Symbol('options');
