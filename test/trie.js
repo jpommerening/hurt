@@ -3,7 +3,6 @@
 import { expect } from 'chai';
 
 import { add, flatten, match } from '../src/trie';
-import create from '../src/trie';
 
 describe('trie#add(trie, key, items)', () => {
 
