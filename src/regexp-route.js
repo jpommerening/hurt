@@ -22,7 +22,15 @@ function updateArgs(args) {
       match: req => {
         const url = req.url;
         const match = regexp.exec(url);
-        return (match && match[0] === url) ? match : null;
+        if (match && match[0] === url) {
+          req.handled = true;
+          req.params = {
+            ...req.params,
+            ...match
+          };
+          return true;
+        }
+        return false;
       }
     });
   }

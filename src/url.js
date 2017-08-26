@@ -3,30 +3,6 @@ import handler from './handler';
 
 const EMPTY = {};
 
-function routeHandler(route) {
-  return function (req, ...args) {
-    const next = args.pop();
-    const match = route.match(req);
-
-    if (match) {
-      req.params = {
-        ...req.params,
-        ...match
-      };
-
-      route.call(this, req, ...args, err => {
-        if (!err) {
-          req.handled = true;
-        }
-        next(err);
-      });
-    }
-    else {
-      next();
-    }
-  };
-}
-
 export function mixin({ base = '' } = {}) {
   const tries = [EMPTY];
   const notfound = [];
@@ -64,7 +40,7 @@ export function mixin({ base = '' } = {}) {
 
       const trie = tries.pop();
 
-      tries.push(add(trie, route.prefix, [ routeHandler(route) ]));
+      tries.push(add(trie, route.prefix, [route]));
 
       if (trie === EMPTY) {
         return this.use(function (req, ...args) {

@@ -22,7 +22,16 @@ function updateArgs(args) {
       prefix: getPrefix(template),
       match: req => {
         const url = req.url;
-        return t.fromUri(url);
+        const match = t.fromUri(url);
+        if (match) {
+          req.handled = true;
+          req.params = {
+            ...req.params,
+            ...match
+          };
+          return true;
+        }
+        return false;
       }
     });
   }

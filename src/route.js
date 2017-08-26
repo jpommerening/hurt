@@ -4,6 +4,10 @@ import { Symbol } from './_util';
 const STACK = Symbol('stack');
 const OPTIONS = Symbol('options');
 
+function isroute(arg) {
+  return ( typeof arg === 'function' ) && arg[STACK] && arg[OPTIONS];
+}
+
 export function unshift(route, ...stack) {
   route[STACK].unshift(...stack);
 }
@@ -12,14 +16,27 @@ export function push(route, ...stack) {
   route[STACK].push(...stack);
 }
 
-function isroute(arg) {
-  return ( typeof arg === 'function' ) && arg[STACK] && arg[OPTIONS];
-}
-
 export function defaults() {
   return {
+    context: obj => obj ? Object.create(obj) : {},
+    args: (...args) => args.slice(0, args.length - 1),
+    next: (...args) => args[args.length - 1],
+    match: () => true,
     pre: [],
     post: []
+  };
+}
+
+function base(options, stack) {
+  const fn = handler(stack);
+
+  return function () {
+    const context = options.context(this);
+    const args = options.args.apply(context, arguments);
+    const next = options.next.apply(context, arguments);
+    const match = options.match.apply(context, arguments);
+
+    return match ? fn.call(context, ...args, next) : next();
   };
 }
 
@@ -28,9 +45,9 @@ export default function route(...args) {
     return args[0];
   }
 
-  const stack = [];
   const options = {};
-  const fn = handler(stack);
+  const stack = [];
+  const fn = base(options, stack);
 
   [ ...args, defaults() ].forEach(arg => {
     if (isroute(arg)) {
