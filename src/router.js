@@ -13,10 +13,11 @@ export default function router({ mixins = router.mixins, ...options } = {}) {
   mixin(fn, {
     route,
     use(...args) {
-      const route = this.route(...args);
       const context = proxy(this, 'route');
+      const route = this.route({ context: () => context }, ...args);
+
       context.route = route;
-      stack.push((...args) => context.route(...args));
+      stack.push(route);
       return this;
     },
     mixin(...mixins) {

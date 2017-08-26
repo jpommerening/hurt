@@ -80,4 +80,56 @@ describe('route(...options)', () => {
       });
     });
   });
+
+  describe('#pre', () => {
+    it('is an array', () => {
+      const fn = route();
+      expect(fn.pre).to.be.an('array');
+    });
+
+    it('can be used to register handlers to be called before processing the stack', () => {
+      let step = 0;
+      const fn = route(next => {
+        expect(step).to.equal(1);
+        step++;
+        next();
+      });
+      fn.pre.push(next => {
+        expect(step).to.equal(0);
+        step++;
+        next();
+      });
+      fn(() => {
+        expect(step).to.equal(2);
+        step++;
+      });
+      expect(step).to.equal(3);
+    });
+  });
+
+  describe('#post', () => {
+    it('is an array', () => {
+      const fn = route();
+      expect(fn.post).to.be.an('array');
+    });
+
+    it('can be used to register handlers to be called after processing the stack', () => {
+      let step = 0;
+      const fn = route(next => {
+        expect(step).to.equal(0);
+        step++;
+        next();
+      });
+      fn.post.push(next => {
+        expect(step).to.equal(1);
+        step++;
+        next();
+      });
+      fn(() => {
+        expect(step).to.equal(2);
+        step++;
+      });
+      expect(step).to.equal(3);
+    });
+  });
 });
